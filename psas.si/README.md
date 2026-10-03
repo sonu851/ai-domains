@@ -112,3 +112,5 @@ In your domain registrar dashboard (where `psas.si` is registered):
 ---
 
 © 2026 PSAS AI (psas.si). All rights reserved.
+
+<!-- Cloudflare Pages Build Trigger -->

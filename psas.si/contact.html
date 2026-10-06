@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact PSAS AI | Executive Inquiries & Cloudflare Edge Registry</title>
-  <meta name="description" content="Direct institutional communication channel for PSAS AI. Dispatched to contact@psasgroups.com and secured in Cloudflare D1 database.">
+  <title>Contact PSAS AI | Executive Inquiries & Institutional Registry</title>
+  <meta name="description" content="Direct institutional communication channel for PSAS AI. Executive inquiries and sovereign enterprise pilots.">
   <meta name="theme-color" content="#050507">
   
   <link rel="stylesheet" href="./styles.css?v=20261005">
@@ -1574,13 +1574,13 @@ body {
     <div class="contact-hero">
       <div class="hero-eyebrow-pill" style="margin-bottom: 16px;">
         <span class="eyebrow-dot"></span>
-        <span>INSTITUTIONAL TRANSMISSION CHANNEL • CLOUDFLARE EDGE</span>
+        <span>EXECUTIVE TRANSMISSION CHANNEL • INSTITUTIONAL ENGAGEMENT</span>
       </div>
       <h1 class="hero-headline" style="font-size: clamp(36px, 5vw, 56px);">
         <span class="text-gradient">Connect with PSAS AI.</span>
       </h1>
       <p class="hero-sub" style="font-size: 17px; margin-top: 14px;">
-        Institutional inquiries, sovereign AI deployments, enterprise pilots, and strategic venture partnerships. Transmissions are dispatched directly to <a href="mailto:contact@psasgroups.com" style="color: #2997ff; text-decoration: underline;">contact@psasgroups.com</a> and securely registered in our Cloudflare D1 edge database.
+        Institutional inquiries, sovereign AI deployments, enterprise pilots, and strategic venture partnerships. All communications are securely encrypted and routed directly to executive leadership at <a href="mailto:contact@psasgroups.com" style="color: #2997ff; text-decoration: underline;">contact@psasgroups.com</a>.
       </p>
     </div>
 
@@ -1651,30 +1651,15 @@ body {
             <textarea id="message" name="message" class="form-textarea" placeholder="Detail your technical requirements, estimated timeline, sovereign boundary constraints, and integration specifications..." required></textarea>
           </div>
 
-          <!-- Badges Bar -->
-          <div class="badges-bar">
-            <div class="badge-item">
-              <span class="badge-dot"></span>
-              <span>Direct Routing: <strong>contact@psasgroups.com</strong></span>
-            </div>
-            <div class="badge-item">
-              <span class="badge-dot" style="background: #2997ff; box-shadow: 0 0 8px #2997ff;"></span>
-              <span>Edge Database: <strong>Cloudflare D1 (psas_contacts_db)</strong></span>
-            </div>
-            <div class="badge-item">
-              <span class="badge-dot" style="background: #bf5af2; box-shadow: 0 0 8px #bf5af2;"></span>
-              <span>Security: <strong>Zero-Knowledge • TLS 1.3 Strict</strong></span>
-            </div>
-            <div class="badge-item">
-              <span class="badge-dot" style="background: #ffd60a; box-shadow: 0 0 8px #ffd60a;"></span>
-              <span>Service Level: <strong>&lt; 2 Hr Enterprise Desk</strong></span>
-            </div>
+          <div style="margin-top: 28px;">
+            <button type="submit" class="btn-transmit" id="submit-btn">
+              <span id="btn-text">Send Transmission ↗</span>
+              <span id="btn-spinner" class="spinner-icon" style="display: none;"></span>
+            </button>
+            <p style="text-align: center; font-size: 13px; color: #86868b; margin-top: 14px; margin-bottom: 0;">
+              🔒 256-bit encrypted institutional transmission &bull; Strict confidentiality
+            </p>
           </div>
-
-          <button type="submit" class="btn-transmit" id="submit-btn">
-            <span id="btn-text">Transmit Transmission to contact@psasgroups.com ↗</span>
-            <span id="btn-spinner" class="spinner-icon" style="display: none;"></span>
-          </button>
         </form>
 
         <!-- Live Success Overlay -->
@@ -1682,7 +1667,7 @@ body {
           <div class="success-check-circle">✓</div>
           <h2 style="font-size: 26px; color: #ffffff; margin-bottom: 8px;">Transmission Dispatched & Registered</h2>
           <p style="font-size: 15px; color: #a1a1a6; max-width: 480px; margin: 0 auto 20px;">
-            Your communication has been securely logged into the Cloudflare D1 serverless database and routed directly to <strong>contact@psasgroups.com</strong>.
+            Your communication has been securely encrypted and routed directly to executive leadership.
           </p>
 
           <div class="receipt-box">
@@ -1691,16 +1676,16 @@ body {
               <span class="r-val" id="receipt-id">PSAS-MSG-READY</span>
             </div>
             <div class="receipt-row">
-              <span class="r-label">Delivery Inbox:</span>
-              <span class="r-val">contact@psasgroups.com</span>
+              <span class="r-label">Channel:</span>
+              <span class="r-val">Direct Executive Routing</span>
             </div>
             <div class="receipt-row">
-              <span class="r-label">Database Storage:</span>
-              <span class="r-val">Cloudflare D1 (psas_contacts_db)</span>
+              <span class="r-label">Security:</span>
+              <span class="r-val">End-to-End Encrypted</span>
             </div>
             <div class="receipt-row">
-              <span class="r-label">Edge Node:</span>
-              <span class="r-val" id="receipt-node">Cloudflare Anycast</span>
+              <span class="r-label">Verification:</span>
+              <span class="r-val" id="receipt-node">Dispatched & Verified</span>
             </div>
             <div class="receipt-row">
               <span class="r-label">Timestamp:</span>
@@ -1739,33 +1724,6 @@ body {
             <li class="info-list-item">
               <span class="info-key">Holding Headquarters</span>
               <span class="info-val">PSAS Groups International AI Holding AG<br>Sovereign Enterprise Infrastructure Division</span>
-            </li>
-          </ul>
-        </div>
-
-        <!-- Cloudflare Infrastructure Card -->
-        <div class="info-card">
-          <div class="info-card-title">Cloudflare Edge Architecture</div>
-          <ul class="info-list">
-            <li class="info-list-item">
-              <span class="info-key">Database Engine</span>
-              <span class="info-val">Cloudflare D1 (Serverless SQLite)</span>
-            </li>
-            <li class="info-list-item">
-              <span class="info-key">Database Binding</span>
-              <span class="info-val"><code>env.DB</code> &bull; <code>psas_contacts_db</code></span>
-            </li>
-            <li class="info-list-item">
-              <span class="info-key">Key-Value Mirror</span>
-              <span class="info-val"><code>PSAS_CONTACTS_KV</code></span>
-            </li>
-            <li class="info-list-item">
-              <span class="info-key">Global Edge PoPs</span>
-              <span class="info-val">300+ Cities in 100+ Countries</span>
-            </li>
-            <li class="info-list-item">
-              <span class="info-key">Edge Latency SLA</span>
-              <span class="info-val">&lt; 20ms Anycast Execution</span>
             </li>
           </ul>
         </div>
@@ -1851,7 +1809,7 @@ body {
           <a href="./contact.html">Contact Us</a>
           <a href="./contact.html">Privacy Policy</a>
           <a href="./contact.html">Terms of Service</a>
-          <a href="./contact.html">Cloudflare Security</a>
+          <a href="./contact.html">Security & Governance</a>
         </div>
       </div>
     </div>
@@ -1874,7 +1832,7 @@ body {
 
       // UI loading state
       submitBtn.disabled = true;
-      btnText.textContent = 'Transmitting to contact@psasgroups.com...';
+      btnText.textContent = 'Transmitting...';
       btnSpinner.style.display = 'inline-block';
 
       const payload = {
@@ -1918,9 +1876,7 @@ body {
           successView.style.display = 'block';
           document.getElementById('receipt-id').textContent = result.submission_id || ('PSAS-' + Date.now().toString(36).toUpperCase());
           document.getElementById('receipt-time').textContent = new Date().toLocaleString();
-          if (result.database_synced) {
-            document.getElementById('receipt-node').textContent = 'Cloudflare D1 Verified (Sync OK)';
-          }
+          document.getElementById('receipt-node').textContent = 'Dispatched & Verified';
           window.scrollTo({ top: form.offsetTop - 80, behavior: 'smooth' });
         } else {
           throw new Error(result.error || 'Server rejected transmission');
@@ -1938,14 +1894,14 @@ body {
         );
         const mailtoUrl = 'mailto:contact@psasgroups.com?subject=' + fallbackSubject + '&body=' + fallbackBody;
         
-        if (confirm('Edge transmission note: Network connection issue. Would you like to launch your mail client directly to contact@psasgroups.com?')) {
+        if (confirm('Transmission note: Network connection issue. Would you like to launch your mail client directly to contact@psasgroups.com?')) {
           window.location.href = mailtoUrl;
         } else {
-          alert('Unable to complete edge transmission: ' + err.message + '. You may email us directly at contact@psasgroups.com.');
+          alert('Unable to complete transmission: ' + err.message + '. You may email us directly at contact@psasgroups.com.');
         }
       } finally {
         submitBtn.disabled = false;
-        btnText.textContent = 'Transmit Transmission to contact@psasgroups.com ↗';
+        btnText.textContent = 'Send Transmission ↗';
         btnSpinner.style.display = 'none';
       }
     });

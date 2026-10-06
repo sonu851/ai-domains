@@ -1,155 +1,189 @@
-/**
- * PSAS AI (psas.si)
- * High-Performance Client Logic
- */
+// ==========================================================================
+// PSAS AI (psas.si) - Apple Design System Engine
+// Fluid Micro-Interactions | WWDC Spring Behaviors | Direct Manipulation
+// ==========================================================================
 
-document.addEventListener("DOMContentLoaded", () => {
-    // Mobile Drawer Toggle
-    const mobileBtn = document.getElementById("mobile-menu-btn");
-    const mobileDrawer = document.getElementById("mobile-drawer");
-    if (mobileBtn && mobileDrawer) {
-        mobileBtn.addEventListener("click", () => {
-            mobileDrawer.classList.toggle("open");
-        });
-        document.querySelectorAll(".mob-link").forEach(link => {
-            link.addEventListener("click", () => mobileDrawer.classList.remove("open"));
-        });
-    }
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Code Snippets Data
+  const codeSnippets = {
+    curl: "curl -X POST \"https://api.psas.si/v1/geospatial/raster/analyze\" \\\n  -H \"Authorization: Bearer psas_live_geo772...\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"bbox\": [46.04, 14.48, 46.12, 14.56],\n    \"spectral_bands\": [\"B02\", \"B03\", \"B04\", \"B08\", \"SAR_VV\"],\n    \"analysis_model\": \"psas-flood-inundation-v3\",\n    \"resolution_meters\": 0.5\n  }'",
+    python: "from psas import GeoSpatialEngine, BoundingBox\n\nengine = GeoSpatialEngine.connect(api_key=\"psas_live_geo772...\")\nslovenia_corridor = BoundingBox(lat_min=45.9, lon_min=14.3, lat_max=46.2, lon_max=14.7)\n\n# Predict micro-climate flood inundation risk\nforecast = engine.predict_flood_corridor(\n    bbox=slovenia_corridor,\n    rainfall_model=\"storm_scenario_50yr\",\n    soil_saturation_index=0.88\n)\n\nprint(f\"High-Risk Infrastructure At-Risk: {len(forecast.critical_assets)}\")\nfor asset in forecast.critical_assets[:3]:\n    print(f\"- {asset.name}: Peak Inundation Depth: {asset.depth_m}m\")",
+    ts: "import { PSASGeoClient } from '@psas/geospatial-sdk';\n\nconst geo = new PSASGeoClient({ apiKey: process.env.PSAS_API_KEY });\nconst cropHealth = await geo.calculateNDVI({\n  coordinates: [[46.05, 14.50], [46.08, 14.55]],\n  dateRange: ['2026-09-01', '2026-10-01']\n});"
+  };
 
-    // Pricing Billing Toggle (Annual / Monthly)
-    const pricingToggle = document.getElementById("pricing-toggle");
-    const priceVals = document.querySelectorAll(".price-val");
-    const monthlyLbl = document.getElementById("monthly-label");
-    const annualLbl = document.getElementById("annual-label");
+  let currentLang = 'curl';
+  const codeDisplay = document.getElementById('code-display');
+  const codeTabBtns = document.querySelectorAll('.code-tab-btn');
+  const copyBtn = document.getElementById('copy-code-btn');
 
-    if (pricingToggle) {
-        pricingToggle.addEventListener("change", (e) => {
-            const isAnnual = e.target.checked;
-            if (isAnnual) {
-                monthlyLbl.classList.remove("active");
-                annualLbl.classList.add("active");
-            } else {
-                monthlyLbl.classList.add("active");
-                annualLbl.classList.remove("active");
-            }
-
-            priceVals.forEach(el => {
-                const monthly = el.getAttribute("data-monthly");
-                const annual = el.getAttribute("data-annual");
-                el.textContent = isAnnual ? annual : monthly;
-            });
-        });
-    }
-
-    // FAQ Accordion
-    const faqItems = document.querySelectorAll(".faq-item");
-    faqItems.forEach(item => {
-        const btn = item.querySelector(".faq-question");
-        if (btn) {
-            btn.addEventListener("click", () => {
-                const wasActive = item.classList.contains("active");
-                faqItems.forEach(i => i.classList.remove("active"));
-                if (!wasActive) item.classList.add("active");
-            });
-        }
+  // Code Tab Switcher
+  codeTabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      codeTabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentLang = btn.getAttribute('data-lang');
+      if (codeDisplay && codeSnippets[currentLang]) {
+        codeDisplay.innerHTML = '<code>' + escapeHtml(codeSnippets[currentLang]) + '</code>';
+      }
     });
+  });
 
-    // Modal Handling
-    const modal = document.getElementById("contact-modal");
-    const closeBtn = document.getElementById("close-modal-btn");
-    const openBtns = document.querySelectorAll(".open-contact-btn");
-    const planInput = document.getElementById("selected-plan-input");
-    const modalTitle = document.getElementById("modal-title");
-
-    openBtns.forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const plan = btn.getAttribute("data-plan") || "Enterprise Deployment";
-            if (planInput) planInput.value = plan;
-            if (modalTitle) modalTitle.textContent = "Deploy " + plan;
-            if (modal) modal.classList.add("open");
-        });
+  // Copy Code Button
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      const textToCopy = codeSnippets[currentLang] || '';
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        copyBtn.innerHTML = '<span>Copied! ✓</span>';
+        showToast('Code snippet copied to clipboard.');
+        setTimeout(() => {
+          copyBtn.innerHTML = '<span>Copy Snippet</span>';
+        }, 2000);
+      }).catch(() => {
+        showToast('Failed to copy to clipboard.');
+      });
     });
+  }
 
-    if (closeBtn && modal) {
-        closeBtn.addEventListener("click", () => modal.classList.remove("open"));
-        modal.addEventListener("click", (e) => {
-            if (e.target === modal) modal.classList.remove("open");
-        });
-    }
+  // 2. Interactive Pro App Simulator Scenarios
+  const simActionBtns = document.querySelectorAll('.sim-action-btn');
+  const promptDisplay = document.getElementById('sim-prompt-display');
+  const replyDisplay = document.getElementById('sim-reply-display');
+  const toolDisplay = document.getElementById('sim-tool-display');
+  const latVal = document.getElementById('sim-lat-val');
 
-    // Form Submission & Toast
-    const form = document.getElementById("onboarding-form");
-    if (form) {
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const name = document.getElementById("form-name").value;
-            const company = document.getElementById("form-company").value;
-            const plan = planInput ? planInput.value : "Enterprise Deployment";
+  simActionBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      simActionBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
-            if (modal) modal.classList.remove("open");
-            form.reset();
+      const prompt = btn.getAttribute('data-prompt');
+      const reply = btn.getAttribute('data-reply');
+      const tool = btn.getAttribute('data-tool');
+      const lat = btn.getAttribute('data-lat');
 
-            showToast(`Thank you ${name}! Deployment brief for ${company} (${plan}) on psas.si received. Our lead architect will contact you within 2 hours.`);
-        });
-    }
+      if (promptDisplay) promptDisplay.textContent = prompt;
+      if (replyDisplay) {
+        replyDisplay.style.opacity = '0.5';
+        replyDisplay.textContent = 'Processing neural tensor inference...';
+      }
 
-    // Toast Function
-    window.showToast = function(msg) {
-        const toast = document.getElementById("toast-message");
-        const toastText = document.getElementById("toast-text");
-        if (toast && toastText) {
-            toastText.textContent = msg;
-            toast.classList.add("show");
-            setTimeout(() => {
-                toast.classList.remove("show");
-            }, 4500);
+      setTimeout(() => {
+        if (replyDisplay) {
+          replyDisplay.style.opacity = '1';
+          replyDisplay.textContent = reply;
         }
-    };
+        if (toolDisplay) toolDisplay.textContent = tool;
+        if (latVal) latVal.textContent = lat;
+        showToast('Inference completed in ' + lat + '.');
+      }, 260);
+    });
+  });
 
-    // Domain Specific Interactive Logic
-    
-        // PSAS Digital Twin Simulation
-        const vibVal = document.getElementById("twin-vib-val");
-        const vibBar = document.getElementById("twin-vib-bar");
-        const tempVal = document.getElementById("twin-temp-val");
-        const tempBar = document.getElementById("twin-temp-bar");
-        const predText = document.getElementById("twin-pred-text");
+  // 3. iOS-Style Pricing Toggle Switcher
+  const pricingToggle = document.getElementById('pricing-toggle');
+  const pricingOptions = document.querySelectorAll('.pricing-switch-option');
+  const pricingCards = document.querySelectorAll('.pricing-card');
 
-        document.getElementById("twin-simulate-bearing-wear")?.addEventListener("click", () => {
-            if (vibVal && vibBar && predText) {
-                vibVal.textContent = "4.82 mm/s";
-                vibVal.style.color = "#EF4444";
-                vibBar.style.width = "88%";
-                vibBar.style.background = "#EF4444";
-                predText.innerHTML = `<span style="color: #EF4444; font-weight: bold;">CRITICAL ANOMALY DETECTED:</span> Inner raceway bearing fatigue identified. MTBF failure predicted in <strong>68.4 hours</strong>. Auto-generated replacement ticket in SAP PM.`;
-                showToast("Forewarning: Anomaly flagged 68 hours before catastrophic mechanical lockup.");
-            }
+  if (pricingToggle) {
+    pricingOptions.forEach(opt => {
+      opt.addEventListener('click', () => {
+        pricingOptions.forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        const billing = opt.getAttribute('data-billing');
+
+        pricingCards.forEach(card => {
+          const priceVal = card.querySelector('[data-price-val]');
+          const periodVal = card.querySelector('.price-period');
+          const monthly = card.getAttribute('data-monthly');
+          const annual = card.getAttribute('data-annual');
+
+          if (billing === 'monthly') {
+            if (priceVal) priceVal.textContent = monthly;
+            if (periodVal) periodVal.textContent = '/ month billed monthly';
+          } else {
+            if (priceVal) priceVal.textContent = annual;
+            if (periodVal) periodVal.textContent = '/ month billed annually';
+          }
         });
+      });
+    });
+  }
 
-        document.getElementById("twin-simulate-thermal-spike")?.addEventListener("click", () => {
-            if (tempVal && tempBar) {
-                tempVal.textContent = "98.4 °C";
-                tempVal.style.color = "#EF4444";
-                tempBar.style.width = "92%";
-                tempBar.style.background = "#EF4444";
-                showToast("Thermal gradient alert: Lube oil pressure compensation dispatched.");
-            }
-        });
+  // 4. Apple FAQ Accordion
+  const faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(item => {
+    const questionBtn = item.querySelector('.faq-question');
+    if (questionBtn) {
+      questionBtn.addEventListener('click', () => {
+        const isOpen = item.classList.contains('active');
+        // Close all others for strict Apple cleanliness
+        faqItems.forEach(i => i.classList.remove('active'));
+        if (!isOpen) {
+          item.classList.add('active');
+        }
+      });
+    }
+  });
 
-        document.getElementById("twin-reset")?.addEventListener("click", () => {
-            if (vibVal && vibBar && tempVal && tempBar && predText) {
-                vibVal.textContent = "1.42 mm/s";
-                vibVal.style.color = "#FF6B4A";
-                vibBar.style.width = "28%";
-                vibBar.style.background = "#FF6B4A";
-                tempVal.textContent = "74.2 °C";
-                tempVal.style.color = "#FF6B4A";
-                tempBar.style.width = "44%";
-                tempBar.style.background = "#FF6B4A";
-                predText.innerHTML = `All parameters operating within healthy baseline tolerances. Projected Remaining Useful Life (RUL): <strong>14,800 Operating Hours</strong>. Probability of anomaly in next 72 hours: <strong>0.04%</strong>.`;
-                showToast("Telemetry restored to normal baseline.");
-            }
-        });
-        
+  // 5. Apple Modal Sheet & Scrim
+  const modal = document.getElementById('access-modal');
+  const modalClose = document.getElementById('modal-close');
+  const openModalBtns = document.querySelectorAll('.open-modal-btn');
+  const modalForm = document.getElementById('modal-form');
+
+  openModalBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (modal) modal.classList.add('open');
+    });
+  });
+
+  if (modalClose) {
+    modalClose.addEventListener('click', () => {
+      if (modal) modal.classList.remove('open');
+    });
+  }
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('open');
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
+      modal.classList.remove('open');
+    }
+  });
+
+  if (modalForm) {
+    modalForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      modal.classList.remove('open');
+      modalForm.reset();
+      showToast('Enterprise Access Request Dispatched. A sovereign engineer will respond in under 15 minutes.');
+    });
+  }
+
+  // 6. Smooth Toast Messenger
+  function showToast(msg) {
+    let toast = document.getElementById('apple-toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3400);
+  }
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 });

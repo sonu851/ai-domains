@@ -1,208 +1,189 @@
-/**
- * YAPA AI (yapa.si)
- * High-Performance Client Logic
- */
+// ==========================================================================
+// YAPA AI (yapa.si) - Apple Design System Engine
+// Fluid Micro-Interactions | WWDC Spring Behaviors | Direct Manipulation
+// ==========================================================================
 
-document.addEventListener("DOMContentLoaded", () => {
-    // Mobile Drawer Toggle
-    const mobileBtn = document.getElementById("mobile-menu-btn");
-    const mobileDrawer = document.getElementById("mobile-drawer");
-    if (mobileBtn && mobileDrawer) {
-        mobileBtn.addEventListener("click", () => {
-            mobileDrawer.classList.toggle("open");
-        });
-        document.querySelectorAll(".mob-link").forEach(link => {
-            link.addEventListener("click", () => mobileDrawer.classList.remove("open"));
-        });
-    }
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Code Snippets Data
+  const codeSnippets = {
+    curl: "curl -X POST \"https://api.yapa.si/v1/voice/stream\" \\\n  -H \"Authorization: Bearer yapa_live_sk9842a...\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"session_id\": \"sess_891024\",\n    \"audio_encoding\": \"opus_48khz\",\n    \"tools\": [\"crm.lookup\", \"telephony.transfer\"],\n    \"latency_mode\": \"ultra_low_180ms\"\n  }'",
+    python: "import yapa\n\nclient = yapa.Client(api_key=\"yapa_live_sk9842a...\")\nsession = client.voice.create_session(\n    agent_id=\"agent_enterprise_support\",\n    latency_budget_ms=180,\n    tools=[\"salesforce.query\", \"stripe.verify\"]\n)\n\n# Stream full-duplex audio in real-time\nfor audio_chunk in mic_stream:\n    response = session.stream(audio_chunk)\n    if response.has_audio:\n        speaker.play(response.audio)",
+    ts: "import { YapaVoiceClient } from '@yapa/voice-sdk';\n\nconst client = new YapaVoiceClient({\n  apiKey: process.env.YAPA_API_KEY,\n  region: 'eu-central-1'\n});\n\nconst session = await client.connectSession({\n  agentId: 'sovereign_voice_agent',\n  onToolCall: async (tool) => {\n    return await executeLocalAction(tool);\n  }\n});"
+  };
 
-    // Pricing Billing Toggle (Annual / Monthly)
-    const pricingToggle = document.getElementById("pricing-toggle");
-    const priceVals = document.querySelectorAll(".price-val");
-    const monthlyLbl = document.getElementById("monthly-label");
-    const annualLbl = document.getElementById("annual-label");
+  let currentLang = 'curl';
+  const codeDisplay = document.getElementById('code-display');
+  const codeTabBtns = document.querySelectorAll('.code-tab-btn');
+  const copyBtn = document.getElementById('copy-code-btn');
 
-    if (pricingToggle) {
-        pricingToggle.addEventListener("change", (e) => {
-            const isAnnual = e.target.checked;
-            if (isAnnual) {
-                monthlyLbl.classList.remove("active");
-                annualLbl.classList.add("active");
-            } else {
-                monthlyLbl.classList.add("active");
-                annualLbl.classList.remove("active");
-            }
-
-            priceVals.forEach(el => {
-                const monthly = el.getAttribute("data-monthly");
-                const annual = el.getAttribute("data-annual");
-                el.textContent = isAnnual ? annual : monthly;
-            });
-        });
-    }
-
-    // FAQ Accordion
-    const faqItems = document.querySelectorAll(".faq-item");
-    faqItems.forEach(item => {
-        const btn = item.querySelector(".faq-question");
-        if (btn) {
-            btn.addEventListener("click", () => {
-                const wasActive = item.classList.contains("active");
-                faqItems.forEach(i => i.classList.remove("active"));
-                if (!wasActive) item.classList.add("active");
-            });
-        }
+  // Code Tab Switcher
+  codeTabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      codeTabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentLang = btn.getAttribute('data-lang');
+      if (codeDisplay && codeSnippets[currentLang]) {
+        codeDisplay.innerHTML = '<code>' + escapeHtml(codeSnippets[currentLang]) + '</code>';
+      }
     });
+  });
 
-    // Modal Handling
-    const modal = document.getElementById("contact-modal");
-    const closeBtn = document.getElementById("close-modal-btn");
-    const openBtns = document.querySelectorAll(".open-contact-btn");
-    const planInput = document.getElementById("selected-plan-input");
-    const modalTitle = document.getElementById("modal-title");
-
-    openBtns.forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const plan = btn.getAttribute("data-plan") || "Enterprise Deployment";
-            if (planInput) planInput.value = plan;
-            if (modalTitle) modalTitle.textContent = "Deploy " + plan;
-            if (modal) modal.classList.add("open");
-        });
+  // Copy Code Button
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      const textToCopy = codeSnippets[currentLang] || '';
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        copyBtn.innerHTML = '<span>Copied! ✓</span>';
+        showToast('Code snippet copied to clipboard.');
+        setTimeout(() => {
+          copyBtn.innerHTML = '<span>Copy Snippet</span>';
+        }, 2000);
+      }).catch(() => {
+        showToast('Failed to copy to clipboard.');
+      });
     });
+  }
 
-    if (closeBtn && modal) {
-        closeBtn.addEventListener("click", () => modal.classList.remove("open"));
-        modal.addEventListener("click", (e) => {
-            if (e.target === modal) modal.classList.remove("open");
+  // 2. Interactive Pro App Simulator Scenarios
+  const simActionBtns = document.querySelectorAll('.sim-action-btn');
+  const promptDisplay = document.getElementById('sim-prompt-display');
+  const replyDisplay = document.getElementById('sim-reply-display');
+  const toolDisplay = document.getElementById('sim-tool-display');
+  const latVal = document.getElementById('sim-lat-val');
+
+  simActionBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      simActionBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const prompt = btn.getAttribute('data-prompt');
+      const reply = btn.getAttribute('data-reply');
+      const tool = btn.getAttribute('data-tool');
+      const lat = btn.getAttribute('data-lat');
+
+      if (promptDisplay) promptDisplay.textContent = prompt;
+      if (replyDisplay) {
+        replyDisplay.style.opacity = '0.5';
+        replyDisplay.textContent = 'Processing neural tensor inference...';
+      }
+
+      setTimeout(() => {
+        if (replyDisplay) {
+          replyDisplay.style.opacity = '1';
+          replyDisplay.textContent = reply;
+        }
+        if (toolDisplay) toolDisplay.textContent = tool;
+        if (latVal) latVal.textContent = lat;
+        showToast('Inference completed in ' + lat + '.');
+      }, 260);
+    });
+  });
+
+  // 3. iOS-Style Pricing Toggle Switcher
+  const pricingToggle = document.getElementById('pricing-toggle');
+  const pricingOptions = document.querySelectorAll('.pricing-switch-option');
+  const pricingCards = document.querySelectorAll('.pricing-card');
+
+  if (pricingToggle) {
+    pricingOptions.forEach(opt => {
+      opt.addEventListener('click', () => {
+        pricingOptions.forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        const billing = opt.getAttribute('data-billing');
+
+        pricingCards.forEach(card => {
+          const priceVal = card.querySelector('[data-price-val]');
+          const periodVal = card.querySelector('.price-period');
+          const monthly = card.getAttribute('data-monthly');
+          const annual = card.getAttribute('data-annual');
+
+          if (billing === 'monthly') {
+            if (priceVal) priceVal.textContent = monthly;
+            if (periodVal) periodVal.textContent = '/ month billed monthly';
+          } else {
+            if (priceVal) priceVal.textContent = annual;
+            if (periodVal) periodVal.textContent = '/ month billed annually';
+          }
         });
+      });
+    });
+  }
+
+  // 4. Apple FAQ Accordion
+  const faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(item => {
+    const questionBtn = item.querySelector('.faq-question');
+    if (questionBtn) {
+      questionBtn.addEventListener('click', () => {
+        const isOpen = item.classList.contains('active');
+        // Close all others for strict Apple cleanliness
+        faqItems.forEach(i => i.classList.remove('active'));
+        if (!isOpen) {
+          item.classList.add('active');
+        }
+      });
     }
+  });
 
-    // Form Submission & Toast
-    const form = document.getElementById("onboarding-form");
-    if (form) {
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const name = document.getElementById("form-name").value;
-            const company = document.getElementById("form-company").value;
-            const plan = planInput ? planInput.value : "Enterprise Deployment";
+  // 5. Apple Modal Sheet & Scrim
+  const modal = document.getElementById('access-modal');
+  const modalClose = document.getElementById('modal-close');
+  const openModalBtns = document.querySelectorAll('.open-modal-btn');
+  const modalForm = document.getElementById('modal-form');
 
-            if (modal) modal.classList.remove("open");
-            form.reset();
+  openModalBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (modal) modal.classList.add('open');
+    });
+  });
 
-            showToast(`Thank you ${name}! Deployment brief for ${company} (${plan}) on yapa.si received. Our lead architect will contact you within 2 hours.`);
-        });
+  if (modalClose) {
+    modalClose.addEventListener('click', () => {
+      if (modal) modal.classList.remove('open');
+    });
+  }
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('open');
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
+      modal.classList.remove('open');
     }
+  });
 
-    // Toast Function
-    window.showToast = function(msg) {
-        const toast = document.getElementById("toast-message");
-        const toastText = document.getElementById("toast-text");
-        if (toast && toastText) {
-            toastText.textContent = msg;
-            toast.classList.add("show");
-            setTimeout(() => {
-                toast.classList.remove("show");
-            }, 4500);
-        }
-    };
+  if (modalForm) {
+    modalForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      modal.classList.remove('open');
+      modalForm.reset();
+      showToast('Enterprise Access Request Dispatched. A sovereign engineer will respond in under 15 minutes.');
+    });
+  }
 
-    // Domain Specific Interactive Logic
-    
-        // YAPA Voice Waveform Animation
-        const canvas = document.getElementById("yapa-waveform-canvas");
-        if (canvas) {
-            const ctx = canvas.getContext("2d");
-            let phase = 0;
-            let activeAnimation = true;
-            
-            function resizeCanvas() {
-                canvas.width = canvas.parentElement.clientWidth;
-                canvas.height = 90;
-            }
-            resizeCanvas();
-            window.addEventListener("resize", resizeCanvas);
+  // 6. Smooth Toast Messenger
+  function showToast(msg) {
+    let toast = document.getElementById('apple-toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3400);
+  }
 
-            function drawWaveform() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                const centerY = canvas.height / 2;
-                ctx.lineWidth = 2.5;
-                ctx.strokeStyle = "#00F0FF";
-                ctx.shadowBlur = 12;
-                ctx.shadowColor = "#00F0FF";
-
-                ctx.beginPath();
-                for (let x = 0; x < canvas.width; x++) {
-                    const amp = Math.sin(x * 0.015 + phase) * 20 * Math.sin(x * 0.005);
-                    const y = centerY + Math.sin(x * 0.05 + phase * 2) * (15 + amp * 0.5);
-                    if (x === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-
-                // Second harmonic
-                ctx.beginPath();
-                ctx.strokeStyle = "rgba(112, 0, 255, 0.4)";
-                ctx.lineWidth = 1.5;
-                for (let x = 0; x < canvas.width; x++) {
-                    const y = centerY + Math.cos(x * 0.04 - phase * 1.5) * 12;
-                    if (x === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-
-                phase += 0.05;
-                if (activeAnimation) requestAnimationFrame(drawWaveform);
-            }
-            drawWaveform();
-        }
-
-        // Prompt Simulators
-        const prompts = {
-            p1: {
-                user: '"Hey YAPA, can you verify our European logistics order #4928 and reroute shipping to Ljubljana if customs are delayed?"',
-                agent: '"Checking ERP customs manifest for #4928... Detected a 14-hour transit delay at Trieste port. I have autonomously initiated the reroute protocol through Ljubljana hub with zero tariff penalty. Confirmation sent to your procurement Slack channel."',
-                tool: '● Tool Executed: ERP.RerouteTransit'
-            },
-            p2: {
-                user: '"YAPA, our CEO is stranded in Frankfurt due to flight cancellation. Book the fastest first-class connection to Zurich before 17:00."',
-                agent: '"Priority request recognized. Scanning Lufthansa and Swiss Air GDS inventory... Reserved Seat 2A on Swiss LX-1073 departing FRA at 15:40. Calendar hold created and boarding pass dispatched to CEO mobile wallet."',
-                tool: '● Tool Executed: Sabre.DirectGDSBooking'
-            },
-            p3: {
-                user: '"A merchant flagged a fraudulent €12,500 wire transfer from our Munich treasury account. Halt transaction immediately."',
-                agent: '"EMERGENCY PROTOCOL ACTIVATED: Dispatched SWIFT MT192 stop-payment recall on transfer #TX-90184. Freezing associated API token and dispatching 2FA challenge to CFO."',
-                tool: '● Tool Executed: SWIFT.MT192Recall'
-            }
-        };
-
-        function simulateYapa(key) {
-            const p = prompts[key];
-            const userEl = document.getElementById("yapa-user-speech");
-            const agentEl = document.getElementById("yapa-agent-reply");
-            const latencyEl = document.getElementById("yapa-latency");
-            
-            if (userEl && agentEl) {
-                userEl.textContent = p.user;
-                agentEl.textContent = "Analyzing acoustic pitch and dispatching neural tool calling...";
-                
-                const randomLat = Math.floor(Math.random() * 35) + 135;
-                setTimeout(() => {
-                    agentEl.textContent = p.agent;
-                    if (latencyEl) latencyEl.textContent = randomLat + "ms";
-                    showToast("YAPA processed request in " + randomLat + "ms with zero human intervention.");
-                }, 350);
-            }
-        }
-
-        document.getElementById("yapa-trigger-prompt-1")?.addEventListener("click", () => simulateYapa("p1"));
-        document.getElementById("yapa-trigger-prompt-2")?.addEventListener("click", () => simulateYapa("p2"));
-        document.getElementById("yapa-trigger-prompt-3")?.addEventListener("click", () => simulateYapa("p3"));
-        
-        document.getElementById("yapa-tone-select")?.addEventListener("change", (e) => {
-            const personaEl = document.getElementById("yapa-active-persona");
-            if (personaEl) personaEl.textContent = e.target.options[e.target.selectedIndex].text.split(" ")[0];
-            showToast("Adapted acoustic tone model to: " + e.target.value);
-        });
-        
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 });

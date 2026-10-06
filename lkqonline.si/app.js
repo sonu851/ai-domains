@@ -1,166 +1,189 @@
-/**
- * LKQ ONLINE AI (lkqonline.si)
- * High-Performance Client Logic
- */
+// ==========================================================================
+// LKQ ONLINE (lkqonline.si) - Apple Design System Engine
+// Fluid Micro-Interactions | WWDC Spring Behaviors | Direct Manipulation
+// ==========================================================================
 
-document.addEventListener("DOMContentLoaded", () => {
-    // Mobile Drawer Toggle
-    const mobileBtn = document.getElementById("mobile-menu-btn");
-    const mobileDrawer = document.getElementById("mobile-drawer");
-    if (mobileBtn && mobileDrawer) {
-        mobileBtn.addEventListener("click", () => {
-            mobileDrawer.classList.toggle("open");
-        });
-        document.querySelectorAll(".mob-link").forEach(link => {
-            link.addEventListener("click", () => mobileDrawer.classList.remove("open"));
-        });
-    }
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Code Snippets Data
+  const codeSnippets = {
+    curl: "curl -X POST \"https://api.lkqonline.si/v1/graph/query\" \\\n  -H \"Authorization: Bearer lkqo_live_graph12...\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"cypher\": \"MATCH (c:Customer)-[:HOLDS]->(a:Account)-[:TRANSFERRED]->(m:Merchant) WHERE c.id = $cid RETURN c, a, m LIMIT 25\",\n    \"parameters\": {\"cid\": \"CUST-9842\"},\n    \"consistency\": \"strong_consensus\"\n  }'",
+    python: "from lkqonline import DistributedGraph, CypherQuery\n\ngraph = DistributedGraph.connect(cluster=\"eu-central-lake\")\n\n# Real-time multi-hop relationship traversal\nquery = CypherQuery(\"\"\"\n    MATCH (org:Enterprise {ticker: 'SAP'})<-[:SUBSIDIARY_OF*1..3]-(sub)\n    MATCH (sub)-[:DEPLOYS_TECH]->(tech:AITool)\n    RETURN org.name, sub.name, tech.vendor\n\"\"\")\n\nfor row in graph.execute(query):\n    print(f\"{row['org.name']} -> {row['sub.name']} uses {row['tech.vendor']}\")",
+    ts: "import { LKQOnlineGraph } from '@lkqonline/graph-sdk';\n\nconst graph = new LKQOnlineGraph({ apiKey: process.env.LKQ_ONLINE_KEY });\nconst lineage = await graph.traceEntityLineage({\n  entityId: 'FINANCIAL_TRANSACTION_7718',\n  maxHops: 4\n});"
+  };
 
-    // Pricing Billing Toggle (Annual / Monthly)
-    const pricingToggle = document.getElementById("pricing-toggle");
-    const priceVals = document.querySelectorAll(".price-val");
-    const monthlyLbl = document.getElementById("monthly-label");
-    const annualLbl = document.getElementById("annual-label");
+  let currentLang = 'curl';
+  const codeDisplay = document.getElementById('code-display');
+  const codeTabBtns = document.querySelectorAll('.code-tab-btn');
+  const copyBtn = document.getElementById('copy-code-btn');
 
-    if (pricingToggle) {
-        pricingToggle.addEventListener("change", (e) => {
-            const isAnnual = e.target.checked;
-            if (isAnnual) {
-                monthlyLbl.classList.remove("active");
-                annualLbl.classList.add("active");
-            } else {
-                monthlyLbl.classList.add("active");
-                annualLbl.classList.remove("active");
-            }
-
-            priceVals.forEach(el => {
-                const monthly = el.getAttribute("data-monthly");
-                const annual = el.getAttribute("data-annual");
-                el.textContent = isAnnual ? annual : monthly;
-            });
-        });
-    }
-
-    // FAQ Accordion
-    const faqItems = document.querySelectorAll(".faq-item");
-    faqItems.forEach(item => {
-        const btn = item.querySelector(".faq-question");
-        if (btn) {
-            btn.addEventListener("click", () => {
-                const wasActive = item.classList.contains("active");
-                faqItems.forEach(i => i.classList.remove("active"));
-                if (!wasActive) item.classList.add("active");
-            });
-        }
+  // Code Tab Switcher
+  codeTabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      codeTabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentLang = btn.getAttribute('data-lang');
+      if (codeDisplay && codeSnippets[currentLang]) {
+        codeDisplay.innerHTML = '<code>' + escapeHtml(codeSnippets[currentLang]) + '</code>';
+      }
     });
+  });
 
-    // Modal Handling
-    const modal = document.getElementById("contact-modal");
-    const closeBtn = document.getElementById("close-modal-btn");
-    const openBtns = document.querySelectorAll(".open-contact-btn");
-    const planInput = document.getElementById("selected-plan-input");
-    const modalTitle = document.getElementById("modal-title");
-
-    openBtns.forEach(btn => {
-        btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            const plan = btn.getAttribute("data-plan") || "Enterprise Deployment";
-            if (planInput) planInput.value = plan;
-            if (modalTitle) modalTitle.textContent = "Deploy " + plan;
-            if (modal) modal.classList.add("open");
-        });
+  // Copy Code Button
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      const textToCopy = codeSnippets[currentLang] || '';
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        copyBtn.innerHTML = '<span>Copied! ✓</span>';
+        showToast('Code snippet copied to clipboard.');
+        setTimeout(() => {
+          copyBtn.innerHTML = '<span>Copy Snippet</span>';
+        }, 2000);
+      }).catch(() => {
+        showToast('Failed to copy to clipboard.');
+      });
     });
+  }
 
-    if (closeBtn && modal) {
-        closeBtn.addEventListener("click", () => modal.classList.remove("open"));
-        modal.addEventListener("click", (e) => {
-            if (e.target === modal) modal.classList.remove("open");
-        });
-    }
+  // 2. Interactive Pro App Simulator Scenarios
+  const simActionBtns = document.querySelectorAll('.sim-action-btn');
+  const promptDisplay = document.getElementById('sim-prompt-display');
+  const replyDisplay = document.getElementById('sim-reply-display');
+  const toolDisplay = document.getElementById('sim-tool-display');
+  const latVal = document.getElementById('sim-lat-val');
 
-    // Form Submission & Toast
-    const form = document.getElementById("onboarding-form");
-    if (form) {
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            const name = document.getElementById("form-name").value;
-            const company = document.getElementById("form-company").value;
-            const plan = planInput ? planInput.value : "Enterprise Deployment";
+  simActionBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      simActionBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
-            if (modal) modal.classList.remove("open");
-            form.reset();
+      const prompt = btn.getAttribute('data-prompt');
+      const reply = btn.getAttribute('data-reply');
+      const tool = btn.getAttribute('data-tool');
+      const lat = btn.getAttribute('data-lat');
 
-            showToast(`Thank you ${name}! Deployment brief for ${company} (${plan}) on lkqonline.si received. Our lead architect will contact you within 2 hours.`);
-        });
-    }
+      if (promptDisplay) promptDisplay.textContent = prompt;
+      if (replyDisplay) {
+        replyDisplay.style.opacity = '0.5';
+        replyDisplay.textContent = 'Processing neural tensor inference...';
+      }
 
-    // Toast Function
-    window.showToast = function(msg) {
-        const toast = document.getElementById("toast-message");
-        const toastText = document.getElementById("toast-text");
-        if (toast && toastText) {
-            toastText.textContent = msg;
-            toast.classList.add("show");
-            setTimeout(() => {
-                toast.classList.remove("show");
-            }, 4500);
+      setTimeout(() => {
+        if (replyDisplay) {
+          replyDisplay.style.opacity = '1';
+          replyDisplay.textContent = reply;
         }
-    };
+        if (toolDisplay) toolDisplay.textContent = tool;
+        if (latVal) latVal.textContent = lat;
+        showToast('Inference completed in ' + lat + '.');
+      }, 260);
+    });
+  });
 
-    // Domain Specific Interactive Logic
-    
-        // LKQ Online Workspace Tabs
-        const tabs = document.querySelectorAll(".workspace-tabs-bar .tab-btn");
-        const docCanvas = document.getElementById("canvas-content");
+  // 3. iOS-Style Pricing Toggle Switcher
+  const pricingToggle = document.getElementById('pricing-toggle');
+  const pricingOptions = document.querySelectorAll('.pricing-switch-option');
+  const pricingCards = document.querySelectorAll('.pricing-card');
 
-        const tabData = {
-            eng: {
-                title: "Architecture RFC: Distributed Multi-Tenant Vector Partitioning",
-                status: "Approved by Security Council",
-                summary: "The engineering team has aligned on sharding tenant vector indices across NVMe storage tiers with AES-256-GCM encryption keys. Estimated latency reduction: 34%."
-            },
-            legal: {
-                title: "EU AI Act Compliance & Model Transparency Dossier",
-                status: "Ready for Statutory Audit",
-                summary: "Documentation of training data lineage, risk classification thresholds, and human-oversight checkpoints validated for Article 6 compliance."
-            },
-            prod: {
-                title: "Q3 2026 Sovereign Cloud & Edge Deployment Roadmap",
-                status: "In Progress (Sprint 14)",
-                summary: "Delivery of on-premise Kubernetes Helm charts and sub-millisecond edge inference runtimes for industrial partners."
-            }
-        };
+  if (pricingToggle) {
+    pricingOptions.forEach(opt => {
+      opt.addEventListener('click', () => {
+        pricingOptions.forEach(o => o.classList.remove('active'));
+        opt.classList.add('active');
+        const billing = opt.getAttribute('data-billing');
 
-        tabs.forEach(btn => {
-            btn.addEventListener("click", () => {
-                tabs.forEach(t => t.classList.remove("active"));
-                btn.classList.add("active");
-                const tKey = btn.getAttribute("data-tab");
-                const d = tabData[tKey];
-                if (d && docCanvas) {
-                    docCanvas.innerHTML = `
-                        <h3>${d.title}</h3>
-                        <p><strong>Current Status:</strong> ${d.status}</p>
-                        <p><strong>AI Copilot Summary:</strong> ${d.summary}</p>
-                        <div class="copilot-action-box">
-                            <span class="copilot-badge">✨ LKQ Online Copilot:</span>
-                            <p id="copilot-stream-text">"Synchronized across workspace channels and referenced in project knowledge base."</p>
-                        </div>
-                    `;
-                }
-            });
+        pricingCards.forEach(card => {
+          const priceVal = card.querySelector('[data-price-val]');
+          const periodVal = card.querySelector('.price-period');
+          const monthly = card.getAttribute('data-monthly');
+          const annual = card.getAttribute('data-annual');
+
+          if (billing === 'monthly') {
+            if (priceVal) priceVal.textContent = monthly;
+            if (periodVal) periodVal.textContent = '/ month billed monthly';
+          } else {
+            if (priceVal) priceVal.textContent = annual;
+            if (periodVal) periodVal.textContent = '/ month billed annually';
+          }
         });
+      });
+    });
+  }
 
-        document.getElementById("copilot-sync-action")?.addEventListener("click", () => {
-            showToast("Real-time collaborative state synced across 3 team members.");
-        });
+  // 4. Apple FAQ Accordion
+  const faqItems = document.querySelectorAll('.faq-item');
+  faqItems.forEach(item => {
+    const questionBtn = item.querySelector('.faq-question');
+    if (questionBtn) {
+      questionBtn.addEventListener('click', () => {
+        const isOpen = item.classList.contains('active');
+        // Close all others for strict Apple cleanliness
+        faqItems.forEach(i => i.classList.remove('active'));
+        if (!isOpen) {
+          item.classList.add('active');
+        }
+      });
+    }
+  });
 
-        document.getElementById("copilot-summarize-thread")?.addEventListener("click", () => {
-            showToast("Meeting executive brief generated and posted to #general.");
-        });
+  // 5. Apple Modal Sheet & Scrim
+  const modal = document.getElementById('access-modal');
+  const modalClose = document.getElementById('modal-close');
+  const openModalBtns = document.querySelectorAll('.open-modal-btn');
+  const modalForm = document.getElementById('modal-form');
 
-        document.getElementById("copilot-export-notion")?.addEventListener("click", () => {
-            showToast("Document exported to Enterprise Notion Workspace.");
-        });
-        
+  openModalBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (modal) modal.classList.add('open');
+    });
+  });
+
+  if (modalClose) {
+    modalClose.addEventListener('click', () => {
+      if (modal) modal.classList.remove('open');
+    });
+  }
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('open');
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
+      modal.classList.remove('open');
+    }
+  });
+
+  if (modalForm) {
+    modalForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      modal.classList.remove('open');
+      modalForm.reset();
+      showToast('Enterprise Access Request Dispatched. A sovereign engineer will respond in under 15 minutes.');
+    });
+  }
+
+  // 6. Smooth Toast Messenger
+  function showToast(msg) {
+    let toast = document.getElementById('apple-toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3400);
+  }
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
 });

@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PSAS Groups Global | Frontier AI Conglomerate Holding</title>
+  <meta name="description" content="PSAS Groups is the parent innovation holding company engineering sovereign supercomputing clusters and 10 specialized AI subsidiaries.">
+  <meta name="theme-color" content="#000000">
+  
+  <link rel="stylesheet" href="./styles.css?v=20261005">
+  <style>
+/* ==========================================================================
+   PSAS GROUPS GLOBAL (psasgroups.com) - Official Apple Conglomerate Design System
+   Frontier AI Holding & 10 Specialized Subsidiary Ventures
+   ========================================================================== */
+
+:root {
+  --apple-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --apple-mono: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  
+  --bg-canvas: #000000;
+  --bg-card: rgba(28, 28, 30, 0.68);
+  --bg-card-hover: rgba(44, 44, 46, 0.85);
+  
+  --border-light: rgba(255, 255, 255, 0.09);
+  --border-top-highlight: rgba(255, 255, 255, 0.22);
+  
+  --text-primary: #F5F5F7;
+  --text-secondary: #86868B;
+  --text-tertiary: #6E6E73;
+  --text-white: #FFFFFF;
+  
+  --accent-holding: #2997FF;
+  --accent-purple: #BF5AF2;
+  --accent-green: #30D158;
+  
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 980px;
+  
+  --spring-default: cubic-bezier(0.16, 1, 0.3, 1);
+  --spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  background-color: var(--bg-canvas);
+}
+
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--apple-font);
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ambient Keynote Soft Lights */
+.holding-ambient-mesh {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1400px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.mesh-holding-top {
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1000px;
+  height: 650px;
+  background: radial-gradient(ellipse at center, rgba(41, 151, 255, 0.18) 0%, rgba(191, 90, 242, 0.08) 50%, transparent 75%);
+  filter: blur(140px);
+}
+
+/* Sticky Apple Glass Navigation */
+.holding-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(25px) saturate(190%);
+  -webkit-backdrop-filter: blur(25px) saturate(190%);
+  border-bottom: 1px solid var(--border-light);
+  height: 58px;
+  display: flex;
+  align-items: center;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-holding {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text-white);
+  font-weight: 600;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.15s ease;
+}
+
+.nav-links a:hover {
+  color: var(--text-white);
+}
+
+/* Apple Pill Buttons */
+.btn-apple {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-pill);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  user-select: none;
+  transition: transform 0.2s var(--spring-default), background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-apple:active {
+  transform: scale(0.97) !important;
+}
+
+.btn-apple-primary {
+  background: var(--text-white);
+  color: #000000;
+  padding: 12px 26px;
+}
+
+.btn-apple-primary:hover {
+  transform: scale(1.02);
+  background: #F5F5F7;
+  box-shadow: 0 4px 24px rgba(255, 255, 255, 0.25);
+}
+
+.btn-apple-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  padding: 12px 26px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.btn-apple-secondary:hover {
+  transform: scale(1.02);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.btn-apple-sm {
+  padding: 7px 16px;
+  font-size: 13px;
+}
+
+/* Sections */
+.section-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 110px 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero Section */
+.hero-holding {
+  padding-top: 90px;
+  padding-bottom: 70px;
+  text-align: center;
+}
+
+.holding-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2997FF;
+  box-shadow: 0 0 10px #2997FF;
+}
+
+.holding-headline {
+  font-size: clamp(2.8rem, 6vw, 5.2rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--text-white);
+  max-width: 1040px;
+  margin: 0 auto 24px;
+}
+
+.holding-headline .text-gradient {
+  background: linear-gradient(180deg, #FFFFFF 0%, #A1A1A6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.holding-sub {
+  font-size: clamp(1.15rem, 2.2vw, 1.4rem);
+  line-height: 1.48;
+  color: var(--text-secondary);
+  max-width: 780px;
+  margin: 0 auto 40px;
+  letter-spacing: -0.015em;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Keynote Metrics Deck */
+.metrics-strip {
+  margin-top: 70px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 860px) {
+  .metrics-strip { grid-template-columns: 1fr 1fr; }
+}
+
+.metric-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid var(--border-light);
+  border-top: 1px solid var(--border-top-highlight);
+  border-radius: var(--radius-lg);
+  padding: 30px 24px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: transform 0.25s var(--spring-default);
+}
+
+.metric-card:hover {
+  transform: translateY(-3px);
+}
+
+.metric-val {
+  font-size: clamp(2.4rem, 3.8vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  color: var(--text-white);
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.metric-title {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
+}
+
+/* Section Headers */
+.section-header {
+  text-align: center;
+  margin-bottom: 54px;
+}
+
+.section-eyebrow {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #2997FF;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--text-white);
+  margin-bottom: 16px;
+}
+
+.section-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.5;
+  letter-spacing: -0.015em;
+}
+
+/* Category Filter Bar */
+.filter-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.filter-tab-btn {
+  background: rgba(118, 118, 128, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  padding: 8px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s var(--spring-default);
+}
+
+.filter-tab-btn:hover {
+  color: var(--text-white);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.filter-tab-btn.active {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--text-white);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* 10 Subsidiaries Bento Matrix */
+.ventures-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .ventures-grid { grid-template-columns: 1fr; }
+}
+
+.venture-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid var(--border-light);
+  border-top: 1px solid var(--border-top-highlight);
+  border-radius: var(--radius-lg);
+  padding: 34px 30px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: transform 0.25s var(--spring-default), border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.venture-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.venture-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.venture-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.venture-name {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-white);
+  letter-spacing: -0.02em;
+}
+
+.venture-domain-pill {
+  font-family: var(--apple-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.venture-kpi-badge {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  color: #30D158;
+}
+
+.venture-category-tag {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #2997FF;
+  margin-bottom: 8px;
+}
+
+.venture-desc {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  margin-bottom: 26px;
+  flex-grow: 1;
+}
+
+.venture-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-light);
+}
+
+.spec-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.15s ease;
+}
+
+.spec-btn:hover {
+  color: var(--text-white);
+}
+
+/* Supercompute Nodes Section */
+.cluster-panel {
+  background: #111113;
+  border: 1px solid var(--border-light);
+  border-top: 1px solid var(--border-top-highlight);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+}
+
+.nodes-switcher {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.node-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s var(--spring-default);
+}
+
+.node-btn:hover {
+  color: var(--text-white);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.node-btn.active {
+  background: rgba(41, 151, 255, 0.15);
+  color: #2997FF;
+  border-color: #2997FF;
+}
+
+.node-telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 24px;
+}
+
+@media (max-width: 860px) {
+  .node-telemetry-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.node-stat-box {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  padding: 20px;
+}
+
+.node-stat-val {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-white);
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.node-stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Synergy Pipeline Section */
+.synergy-diagram {
+  background: var(--bg-card);
+  backdrop-filter: blur(25px);
+  border: 1px solid var(--border-light);
+  border-top: 1px solid var(--border-top-highlight);
+  border-radius: var(--radius-lg);
+  padding: 40px;
+}
+
+.synergy-flow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.synergy-step {
+  flex: 1;
+  min-width: 220px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: var(--radius-md);
+  padding: 24px 20px;
+}
+
+.step-num {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2997FF;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.step-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-white);
+  margin-bottom: 8px;
+}
+
+.step-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+/* Institutional Modal Sheet */
+.holding-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s var(--spring-default);
+}
+
+.holding-modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.holding-modal {
+  background: #1C1C1E;
+  border: 1px solid var(--border-light);
+  border-top: 1px solid var(--border-top-highlight);
+  border-radius: var(--radius-lg);
+  max-width: 540px;
+  width: 100%;
+  padding: 36px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.8);
+  transform: scale(0.95);
+  transition: transform 0.25s var(--spring-default);
+}
+
+.holding-modal-overlay.open .holding-modal {
+  transform: scale(1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.modal-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-white);
+}
+
+.modal-close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--text-white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  color: var(--text-white);
+  font-size: 15px;
+  font-family: var(--apple-font);
+  outline: none;
+}
+
+.modal-input:focus {
+  border-color: #2997FF;
+}
+
+/* Toast */
+.apple-toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: rgba(30, 30, 32, 0.92);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-pill);
+  padding: 12px 24px;
+  font-size: 14px;
+  color: var(--text-white);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 3000;
+  transition: transform 0.3s var(--spring-bounce);
+  pointer-events: none;
+}
+
+.apple-toast.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Footer */
+.holding-footer {
+  border-top: 1px solid var(--border-light);
+  background: #000000;
+  padding: 70px 0 40px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 40px;
+  margin-bottom: 50px;
+}
+
+@media (max-width: 860px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.footer-brand-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-white);
+  margin-bottom: 12px;
+}
+
+.footer-brand-desc {
+  line-height: 1.6;
+  max-width: 320px;
+  margin-bottom: 20px;
+}
+
+.footer-col-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-white);
+  margin-bottom: 16px;
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 10px;
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.footer-links a:hover {
+  color: var(--text-white);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+  </style>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+</head>
+<body>
+
+  <!-- Ambient Keynote Lights -->
+  <div class="holding-ambient-mesh">
+    <div class="mesh-holding-top"></div>
+  </div>
+
+  <!-- Sticky Apple Glass Navigation -->
+  <header class="holding-nav">
+    <div class="nav-container">
+      <a href="./" class="brand-holding">
+        <svg width="30" height="30" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="9" fill="url(#holding-grad)"/>
+          <circle cx="16" cy="16" r="6" stroke="#FFFFFF" stroke-width="2"/>
+          <circle cx="16" cy="16" r="2.5" fill="#2997FF"/>
+          <defs>
+            <linearGradient id="holding-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#2997FF"/>
+              <stop offset="1" stop-color="#BF5AF2"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>PSAS GROUPS GLOBAL</span>
+      </a>
+      
+      <ul class="nav-links">
+        <li><a href="#ventures">Venture Ecosystem</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#supercompute">Supercomputing</a></li>
+        <li><a href="#compliance">Governance</a></li>
+        <li><a href="./contact.html">Contact</a></li>
+      </ul>
+      
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <a href="./contact.html" class="btn-apple btn-apple-secondary btn-apple-sm">Contact Desk</a>
+        <button class="btn-apple btn-apple-primary btn-apple-sm open-inquiry-btn">Institutional Access</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Keynote Hero Section -->
+  <main>
+    <section class="section-wrapper hero-holding">
+      <div class="holding-pill-badge">
+        <span class="badge-dot"></span>
+        <span>GLOBAL ARTIFICIAL INTELLIGENCE CONGLOMERATE • 10 VENTURES</span>
+      </div>
+      
+      <h1 class="holding-headline">
+        Powering the Autonomous Global Economy. <br>
+        <span class="text-gradient">One Unified Frontier AI Holding.</span>
+      </h1>
+      
+      <p class="holding-sub">
+        PSAS Groups is the parent innovation holding company engineering autonomous intelligence, sovereign supercomputing clusters, and mission-critical enterprise ventures across voice, robotics, cyber defense, procurement, knowledge search, and industrial digital twins.
+      </p>
+      
+      <div class="hero-actions">
+        <a href="#ventures" class="btn-apple btn-apple-primary">Explore 10 AI Subsidiaries ↓</a>
+        <a href="./contact.html" class="btn-apple btn-apple-secondary">Executive Contact Desk ↗</a>
+      </div>
+      
+      <!-- Keynote Metrics Deck -->
+      <div class="metrics-strip">
+        <div class="metric-card">
+          <div class="metric-val">10</div>
+          <div class="metric-title">Frontier AI Ventures (100% Live)</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val">12.8</div>
+          <div class="metric-title">PFLOPS Dedicated Supercompute</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val">$2.4B+</div>
+          <div class="metric-title">Enterprise Portfolio Value</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val">45+</div>
+          <div class="metric-title">Sovereign Markets Served</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 Ventures Portfolio Section -->
+    <section class="section-wrapper" id="ventures">
+      <div class="section-header">
+        <div class="section-eyebrow">Conglomerate Ecosystem</div>
+        <h2 class="section-title">The 10 Subsidiaries of PSAS Groups</h2>
+        <p class="section-subtitle">
+          Every company within the PSAS Groups portfolio solves a distinct, mission-critical frontier AI discipline with deterministic precision and dedicated sovereign hosting.
+        </p>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="filter-tabs">
+        <button class="filter-tab-btn active" data-filter="all">All 10 Subsidiaries</button>
+        <button class="filter-tab-btn" data-filter="infra">Infrastructure & Models</button>
+        <button class="filter-tab-btn" data-filter="sec">Security & Operations</button>
+        <button class="filter-tab-btn" data-filter="comm">Intelligence & Commerce</button>
+      </div>
+
+      <!-- Ventures Bento Grid -->
+      <div class="ventures-grid" id="ventures-grid">
+        <div class="venture-card" data-category="comm" data-sid="yapa">
+  <div class="card-top">
+    <div class="venture-identity">
+      <div class="venture-icon" style="background: #2997FF18; border: 1px solid #2997FF40;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2997FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+      </div>
+      <div>
+        <div class="venture-name">YAPA AI</div>
+        <div class="venture-domain-pill">yapa.si</div>
+      </div>
+    </div>
+    <div class="venture-kpi-badge"><180ms</div>
+  </div>
+  
+  <div class="venture-category-tag">Autonomous Voice & Conversational Intelligence</div>
+  <p class="venture-desc">YAPA AI powers mission-critical enterprise conversational workflows. Zero-latency streaming acoustic encoders, contextual episodic memory, and deterministic autonomous tool executi...</p>
+  
+  <div class="venture-card-actions">
+    <button class="spec-btn open-spec-btn" data-sid="yapa">Technical Specs &rarr;</button>
+    <a href="https://yapa.si" class="btn-apple btn-apple-secondary btn-apple-sm" target="_blank" rel="noopener">
+      Open Portal &nearr;
+    </a>
+  </div>
+</div>
+<div class="venture-card" data-category="infra" data-sid="vtu">
+  <div class="card-top">
+    <div class="venture-identity">
+      <div class="venture-icon" style="background: #30D15818; border: 1px solid #30D15840;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+      </div>
+      <div>
+        <div class="venture-name">VTU AI</div>
+        <div class="venture-domain-pill">vtu.si</div>
+      </div>
+    </div>
+    <div class="venture-kpi-badge">120 FPS</div>
+  </div>
+  
+  <div class="venture-category-tag">Vision Tensor Unit & Spatial Video Intelligence</div>
+  <p class="venture-desc">VTU AI turns multi-camera 4K visual feeds into microsecond spatial understanding, 5-micron manufacturing defect detection, and deterministic autonomous trajectory vectors....</p>
+  
+  <div class="venture-card-actions">
+    <button class="spec-btn open-spec-btn" data-sid="vtu">Technical Specs &rarr;</button>
+    <a href="https://vtu.si" class="btn-apple btn-apple-secondary btn-apple-sm" target="_blank" rel="noopener">
+      Open Portal &nearr;
+    </a>
+  </div>
+</div>
+<div class="venture-card" data-category="sec" data-sid="psasecurity">
+  <div class="card-top">
+    <div class="venture-identity">
+      <div class="venture-icon" style="background: #FF375F18; border: 1px solid #FF375F40;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF375F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+      </div>
+      <div>
+        <div class="venture-name">PSA SECURITY AI</div>
+        <div class="venture-domain-pill">psasecurity.si</div>
+      </div>
+    </div>
+    <div class="venture-kpi-badge">42ms</div>
+  </div>
+  
+  <div class="venture-category-tag">Autonomous Cyber Defense & Predictive Threat Neutralization</div>
+  <p class="venture-desc">PSA Security AI combines autonomous threat hunting agents, kernel-level eBPF behavioral heuristics, and automated kill-chain countermeasures to eliminate intrusions before lateral ...</p>
+  
+  <div class="venture-card-actions">
+    <button class="spec-btn open-spec-btn" data-sid="psasecurity">Technical Specs &rarr;</button>
+    <a href="https://psasecurity.si" class="btn-apple btn-apple-secondary btn-apple-sm" target="_blank" rel="noopener">
+      Open Portal &nearr;
+    </a>
+  </div>
+</div>
+<div class="venture-card" data-category="comm" data-sid="buypsa">
+  <div class="card-top">
+    <div class="venture-identity">
+      <div class="venture-icon" style="background: #FF9F0A18; border: 1px solid #FF9F0A40;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9F0A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+      </div>
+      <div>
+        <div class="venture-name">BUYPSA AI</div>
+        <div class="venture-domain-pill">buypsa.si</div>
+      </div>
+    </div>
+    <div class="venture-kpi-badge">28.4%</div>
+  </div>
+  
+  <div class="venture-category-tag">Autonomous B2B Procurement & Sourcing Marketplace</div>
+  <p class="venture-desc">BuyPSA AI deploys autonomous negotiating agents that discover vetted suppliers, calculate optimal bulk pricing, and auto-execute contracts to reduce corporate spend by up to 28.4%....</p>
+  
+  <div class="venture-card-actions">
+    <button class="spec-btn open-spec-btn" data-sid="buypsa">Technical Specs &rarr;</button>
+    <a href="https://buypsa.si" class="btn-apple btn-apple-secondary btn-apple-sm" target="_blank" rel="noopener">
+      Open Portal &nearr;
+    </a>
+  </div>
+</div>
+<div class="venture-card" data-category="comm" data-sid="lkq">
+  <div class="card-top">
+    <div class="venture-identity">
+      <div class="venture-icon" style="background: #5E5CE618; border: 1px solid #5E5CE640;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5E5CE6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+      </div>
+      <div>
+        <div class="venture-name">LKQ AI</div>
+        <div class="venture-domain-pill">lkq.si</div>
+      </div>
+    </div>
+    <div class="venture-kpi-badge">0.68ms</div>
+  </div>
+  
+  <div class="venture-category-tag">Liquid Knowledge Quantum & Low-Latency Retrieval</div>
+  <p class="venture-desc">LKQ AI pioneers liquid neural memory and sub-millisecond vector indexing. Billions of enterprise embeddings indexed with microsecond semantic recall and zero hallucination drift....</p>
+  
+  <div class="venture-card-actions">
+    <button class="spec-btn open-spec-btn" data-sid="lkq">Technical Specs &rarr;</button>
+    <a href="https://lkq.si" class="btn-apple btn-apple-secondary btn-apple-sm" target="_blank" rel="noopener">
+      Open Portal &nearr;
+    </a>
+  </div>
+</div>
+<div class="venture-card" data-category="comm" data-sid="lkqonline">
+  <div class="card-top">
+    <div class="venture-identity">
+      <div class="venture-icon" style="background: #0A84FF18; border: 1px solid #0A84FF40;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0A84FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+      </div>
+      <div>
+        <div class="venture-name">LKQ ONLINE</div>
+        <div class="venture-domain-pill">lkqonline.si</div>
+      </div>
+    </div>
+    <div class="venture-kpi-badge">1.4B+</div>
+  </div>
+  
+  <div class="venture-category-tag">Distributed Knowledge Graphs & Real-Time Sync</div>
+  <p class="venture-desc">LKQ Online bridges enterprise data silos into unified, living knowledge graphs. Real-time graph synchronization, semantic entity resolution, and temporal lineage across 1.4B+ relat...</p>
+  
+  <div class="venture-card-actions">
+    <button class="spec-btn open-spec-btn" data-sid="lkqonline">Technical Specs &rarr;</button>
+    <a href="https://lkqonline.si" class="btn-apple btn-apple-secondary btn-apple-sm" target="_blank" rel="noopener">
+      Open Portal &nearr;
+    </a>
+  </div>
+</div>
+<div class="venture-card" data-category="sec" data-sid="psao">
+  <div class="card-top">
+    <div class="venture-identity">
+      <div class="venture-icon" style="background: #34C75918; border: 1px solid #34C75940;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+      </div>
+      <div>
+        <div class="venture-name">PSAO AI</div>
+        <div class="venture-domain-pill">psao.si</div>
+      </div>
+    </div>
+    <div class="venture-kpi-badge">1.4s</div>
+  </div>
+  
+  <div class="venture-category-tag">Autonomous Cloud Operations & Self-Healing SRE</div>
+  <p class="venture-desc">PSAO AI monitors complex Kubernetes, cloud-native, and hybrid infrastructure. Autonomous SRE agents predict incidents, resolve container crashes, and auto-tune database performance...</p>
+  
+  <div class="venture-card-actions">
+    <button class="spec-btn open-spec-btn" data-sid="psao">Technical Specs &rarr;</button>
+    <a href="https://psao.si" class="btn-apple btn-apple-secondary btn-apple-sm" target="_blank" rel="noopener">
+      Open Portal &nearr;
+    </a>
+  </div>
+</div>
+<div class="venture-card" data-category="sec" data-sid="psas">
+  <div class="card-top">
+    <div class="venture-identity">
+      <div class="venture-icon" style="background: #40C8E018; border: 1px solid #40C8E040;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#40C8E0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+      </div>
+      <div>
+        <div class="venture-name">PSAS AI</div>
+        <div class="venture-domain-pill">psas.si</div>
+      </div>
+    </div>
+    <div class="venture-kpi-badge">10M km²</div>
+  </div>
+  
+  <div class="venture-category-tag">Predictive Spatial Analytics & Geospatial Foundation Models</div>
+  <p class="venture-desc">PSAS AI processes high-resolution satellite, synthetic aperture radar (SAR), and climate telemetry. Geospatial foundation models for precision agriculture, urban development, and d...</p>
+  
+  <div class="venture-card-actions">
+    <button class="spec-btn open-spec-btn" data-sid="psas">Technical Specs &rarr;</button>
+    <a href="https://psas.si" class="btn-apple btn-apple-secondary btn-apple-sm" target="_blank" rel="noopener">
+      Open Portal &nearr;
+    </a>
+  </div>
+</div>
+<div class="venture-card" data-category="infra" data-sid="psasgroup">
+  <div class="card-top">
+    <div class="venture-identity">
+      <div class="venture-icon" style="background: #AF52DE18; border: 1px solid #AF52DE40;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#AF52DE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+      </div>
+      <div>
+        <div class="venture-name">PSAS GROUP</div>
+        <div class="venture-domain-pill">psasgroup.si</div>
+      </div>
+    </div>
+    <div class="venture-kpi-badge">10,000+</div>
+  </div>
+  
+  <div class="venture-category-tag">Enterprise AI Transformation & Multi-Agent Swarms</div>
+  <p class="venture-desc">PSAS Group engineers autonomous multi-agent systems for multinational enterprises. Transform legacy ERP, CRM, and compliance workflows into autonomous multi-agent pipelines....</p>
+  
+  <div class="venture-card-actions">
+    <button class="spec-btn open-spec-btn" data-sid="psasgroup">Technical Specs &rarr;</button>
+    <a href="https://psasgroup.si" class="btn-apple btn-apple-secondary btn-apple-sm" target="_blank" rel="noopener">
+      Open Portal &nearr;
+    </a>
+  </div>
+</div>
+<div class="venture-card" data-category="infra" data-sid="psasgroups">
+  <div class="card-top">
+    <div class="venture-identity">
+      <div class="venture-icon" style="background: #5856D618; border: 1px solid #5856D640;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5856D6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+      </div>
+      <div>
+        <div class="venture-name">PSAS GROUPS</div>
+        <div class="venture-domain-pill">psasgroups.si</div>
+      </div>
+    </div>
+    <div class="venture-kpi-badge">100%</div>
+  </div>
+  
+  <div class="venture-category-tag">Federated Intelligence & Privacy-Preserving Learning</div>
+  <p class="venture-desc">PSAS Groups enables collaborative AI model training without centralizing sensitive raw data. Hospitals, banks, and sovereign states train frontier models together while keeping raw...</p>
+  
+  <div class="venture-card-actions">
+    <button class="spec-btn open-spec-btn" data-sid="psasgroups">Technical Specs &rarr;</button>
+    <a href="https://psasgroups.si" class="btn-apple btn-apple-secondary btn-apple-sm" target="_blank" rel="noopener">
+      Open Portal &nearr;
+    </a>
+  </div>
+</div>
+
+      </div>
+    </section>
+
+    <!-- Conglomerate Architecture & Synergy Section -->
+    <section class="section-wrapper" id="architecture">
+      <div class="section-header">
+        <div class="section-eyebrow">Synergy Architecture</div>
+        <h2 class="section-title">The Unified Autonomous Dataflow</h2>
+        <p class="section-subtitle">
+          How telemetry flows seamlessly across perception, knowledge, operations, and governance to deliver an unbreakable enterprise intelligence mesh.
+        </p>
+      </div>
+
+      <div class="synergy-diagram">
+        <div class="synergy-flow">
+          <div class="synergy-step">
+            <div class="step-num">Step 01 • Perception</div>
+            <h3 class="step-title">Multimodal Ingestion</h3>
+            <p class="step-desc">
+              <strong>YAPA AI</strong> (Voice & Audio) & <strong>VTU AI</strong> (120 FPS Vision) ingest raw edge sensory streams with sub-microsecond neural encoders.
+            </p>
+          </div>
+
+          <div class="synergy-step">
+            <div class="step-num">Step 02 • Cognition</div>
+            <h3 class="step-title">Knowledge & Vectors</h3>
+            <p class="step-desc">
+              <strong>LKQ AI</strong> (0.68ms Vector RAG) & <strong>LKQ Online</strong> (1.4B Node Graphs) synthesize streaming telemetry into verified knowledge states.
+            </p>
+          </div>
+
+          <div class="synergy-step">
+            <div class="step-num">Step 03 • Operations</div>
+            <h3 class="step-title">Autonomous Execution</h3>
+            <p class="step-desc">
+              <strong>PSAO AI</strong> (1.4s Cloud SRE), <strong>BuyPSA AI</strong> (Procurement), and <strong>PSAS AI</strong> (Planetary GIS) trigger deterministic physical actions.
+            </p>
+          </div>
+
+          <div class="synergy-step">
+            <div class="step-num">Step 04 • Governance</div>
+            <h3 class="step-title">Defense & Consensus</h3>
+            <p class="step-desc">
+              <strong>PSA Security AI</strong> intercepts zero-day threats while <strong>PSAS Groups</strong> aggregates federated models with differential privacy (ε &lt; 0.1).
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12.8 PFLOPS Supercomputing Cluster Section -->
+    <section class="section-wrapper" id="supercompute">
+      <div class="section-header">
+        <div class="section-eyebrow">Sovereign Supercomputing</div>
+        <h2 class="section-title">12.8 PFLOPS Compute Backbone</h2>
+        <p class="section-subtitle">
+          Dedicated liquid-cooled GPU clusters distributed across environmentally sustainable, sovereign European and global data centers.
+        </p>
+      </div>
+
+      <div class="cluster-panel">
+        <div class="nodes-switcher">
+          <button class="node-btn active" data-node="alpha">Cluster Alpha • Ljubljana Central</button>
+          <button class="node-btn" data-node="bravo">Cluster Bravo • Frankfurt Continental</button>
+          <button class="node-btn" data-node="charlie">Cluster Charlie • Singapore APAC</button>
+          <button class="node-btn" data-node="delta">Cluster Delta • US-East Sovereign</button>
+        </div>
+
+        <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-white); margin-bottom: 8px;" id="node-name-display">
+          Cluster Alpha • Ljubljana Central Hub (Slovenia)
+        </div>
+        <p style="color: var(--text-secondary); font-size: 14px; max-width: 680px;" id="node-desc-display">
+          Primary sovereign research center powered by 100% renewable alpine hydroelectric and geothermal energy. Hosts primary foundation model training runs and federated learning coordinators.
+        </p>
+
+        <div class="node-telemetry-grid">
+          <div class="node-stat-box">
+            <div class="node-stat-val" id="node-compute-val">3.8 PFLOPS</div>
+            <div class="node-stat-label">Dedicated Tensor Compute</div>
+          </div>
+          <div class="node-stat-box">
+            <div class="node-stat-val" id="node-latency-val">1.2ms</div>
+            <div class="node-stat-label">EU Central Ingress Latency</div>
+          </div>
+          <div class="node-stat-box">
+            <div class="node-stat-val" id="node-util-val">84.2%</div>
+            <div class="node-stat-label">Active Cluster Utilization</div>
+          </div>
+          <div class="node-stat-box">
+            <div class="node-stat-val" style="color: #30D158;">100% Green</div>
+            <div class="node-stat-label">Hydroelectric & Geothermal</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Governance & Compliance -->
+    <section class="section-wrapper" id="compliance">
+      <div class="section-header">
+        <div class="section-eyebrow">Regulatory Compliance</div>
+        <h2 class="section-title">Certified Sovereign Trust</h2>
+        <p class="section-subtitle">
+          Every subsidiary adheres to the highest European and international regulatory frameworks for institutional safety.
+        </p>
+      </div>
+
+      <div class="metrics-strip" style="margin-top: 0;">
+        <div class="metric-card">
+          <div class="metric-val" style="font-size: 1.8rem; color: #30D158;">SOC-2 Type II</div>
+          <div class="metric-title">Continuous AICPA Audited</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" style="font-size: 1.8rem; color: #2997FF;">EU AI Act</div>
+          <div class="metric-title">High-Risk Tier-1 Approved</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" style="font-size: 1.8rem; color: #BF5AF2;">ISO 27001</div>
+          <div class="metric-title">Information Security Certified</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" style="font-size: 1.8rem; color: #FF9F0A;">HIPAA & GDPR</div>
+          <div class="metric-title">Zero Data Retention Mandate</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Apple Multi-Column Footer -->
+  <footer class="holding-footer">
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand-title">PSAS GROUPS GLOBAL</div>
+          <p class="footer-brand-desc">
+            The sovereign innovation holding company engineering autonomous AI infrastructure, supercomputing clusters, and mission-critical enterprise platforms.
+          </p>
+          <div style="display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: #30D158;">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #30D158;"></span>
+            <span>All 10 Ventures 100% Operational (99.999% SLA)</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Perception & Vision</div>
+          <ul class="footer-links">
+            <li><a href="https://yapa.si" target="_blank" rel="noopener">YAPA (Voice AI)</a></li>
+            <li><a href="https://vtu.si" target="_blank" rel="noopener">VTU (Computer Vision)</a></li>
+            <li><a href="https://psas.si" target="_blank" rel="noopener">PSAS (Spatial GIS)</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Knowledge & Ops</div>
+          <ul class="footer-links">
+            <li><a href="https://lkq.si" target="_blank" rel="noopener">LKQ (Quantum RAG)</a></li>
+            <li><a href="https://lkqonline.si" target="_blank" rel="noopener">LKQ Online (Graphs)</a></li>
+            <li><a href="https://psao.si" target="_blank" rel="noopener">PSAO (Autonomous SRE)</a></li>
+            <li><a href="https://buypsa.si" target="_blank" rel="noopener">BuyPSA (Procurement)</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Defense & Federated</div>
+          <ul class="footer-links">
+            <li><a href="https://psasecurity.si" target="_blank" rel="noopener">PSA Security (Cyber)</a></li>
+            <li><a href="https://psasgroup.si" target="_blank" rel="noopener">PSAS Group (Swarms)</a></li>
+            <li><a href="https://psasgroups.si" target="_blank" rel="noopener">PSAS Groups (Federated)</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Holding Institutional</div>
+          <ul class="footer-links">
+            <li><a href="./contact.html">Executive Contact Desk</a></li>
+            <li><a href="./contact.html">Investor Relations</a></li>
+            <li><a href="./contact.html">Sovereign Fund Access</a></li>
+            <li><a href="./contact.html">Supercompute Allocation</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 PSAS Groups Holding Inc. All rights reserved. Registered Conglomerate Entity.</div>
+        <div style="display: flex; gap: 20px;">
+          <a href="./contact.html" style="color: var(--text-secondary); text-decoration: none;">Contact Us</a>
+          <a href="./contact.html" style="color: var(--text-secondary); text-decoration: none;">Privacy Policy</a>
+          <a href="./contact.html" style="color: var(--text-secondary); text-decoration: none;">Terms of Service</a>
+          <a href="./contact.html" style="color: var(--text-secondary); text-decoration: none;">EU AI Act Framework</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Technical Spec Sheet Modal -->
+  <div class="holding-modal-overlay" id="spec-modal">
+    <div class="holding-modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="spec-title">Subsidiary Architecture Specs</h3>
+        <button class="modal-close-btn" id="spec-close">&times;</button>
+      </div>
+      <div id="spec-content" style="color: var(--text-primary); font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+        Loading technical specifications...
+      </div>
+      <a href="#" id="spec-direct-link" class="btn-apple btn-apple-primary" target="_blank" rel="noopener" style="width: 100%;">
+        Open Subsidiary Live Portal &nearr;
+      </a>
+    </div>
+  </div>
+
+  <!-- Institutional Inquiry Modal -->
+  <div class="holding-modal-overlay" id="inquiry-modal">
+    <div class="holding-modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Institutional Inquiries</h3>
+        <button class="modal-close-btn" id="inquiry-close">&times;</button>
+      </div>
+      <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 20px;">
+        Direct access channel for sovereign wealth funds, multinational enterprise consortiums, and institutional capital partners.
+      </p>
+      <form class="modal-form" id="inquiry-form">
+        <input type="text" class="modal-input" placeholder="Executive Name" required>
+        <input type="email" class="modal-input" placeholder="Institutional Email" required>
+        <input type="text" class="modal-input" placeholder="Institution / Organization / Fund" required>
+        <select class="modal-input" style="background: rgba(255, 255, 255, 0.08);">
+          <option value="sovereign">Sovereign Supercompute Allocation</option>
+          <option value="conglomerate">Enterprise-Wide Multi-Subsidiary Licensing</option>
+          <option value="capital">Institutional Investor Relations</option>
+          <option value="partnership">Strategic Technology Partnership</option>
+        </select>
+        <button type="submit" class="btn-apple btn-apple-primary" style="margin-top: 10px;">Submit Institutional Inquiry ↗</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="apple-toast" id="apple-toast">Inquiry Submitted. Holding executive office will connect within 15 minutes.</div>
+
+  <script src="./app.js"></script>
+</body>
+</html>

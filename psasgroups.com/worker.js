@@ -4,7 +4,7 @@ export default {
   async fetch(request, env, ctx) {
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
       "Access-Control-Max-Age": "86400"
     };
@@ -74,7 +74,7 @@ export default {
         const googleToken = id_token || credential;
         let profile = null;
 
-        // 1. Verify via Access Token
+        // Verify via Access Token
         if (access_token) {
           try {
             const userRes = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
@@ -86,7 +86,7 @@ export default {
           }
         }
 
-        // 2. Verify via ID Token / JWT Credential
+        // Verify via ID Token / JWT Credential
         if (!profile && googleToken) {
           try {
             const tokenRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${googleToken}`);
@@ -119,7 +119,6 @@ export default {
           });
         }
 
-        // Authorized executive - issue cryptographically random session token
         const sessionToken = "psas_sess_" + crypto.randomUUID().replace(/-/g, "") + "_" + Date.now().toString(36);
         const sessionData = {
           role: "Executive Administrator",
@@ -281,8 +280,8 @@ export default {
             INSERT INTO job_applications (
               id, job_id, job_title, company, applicant_name,
               applicant_email, applicant_phone, linkedin_url, portfolio_url,
-              resume_url, cover_note
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              resume_url, cover_note, status
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'in_process')
           `).bind(
             appId, job_id, (job_title || "General Application").trim(), (company || "PSAS Groups").trim(), applicant_name.trim(),
             applicant_email.trim(), (applicant_phone || "").trim(), (linkedin_url || "").trim(), (portfolio_url || "").trim(),
@@ -307,9 +306,9 @@ export default {
     }
 
     // =========================================================================
-    // 4. ADMIN JOB REMOVAL ACTION: POST /api/admin/jobs/delete or /api/jobs/delete
+    // 4. ADMIN ACTIONS: JOBS STATUS & REMOVAL
     // =========================================================================
-    if ((pathname === "/api/admin/jobs/delete" || pathname === "/api/jobs/delete") && request.method === "POST") {
+    if ((pathname === "/api/jobs/delete" || pathname === "/api/admin/jobs/delete") && request.method === "POST") {
       const session = await getSession();
       if (!session) {
         return new Response(JSON.stringify({ success: false, error: "Unauthorized: Executive Administrator session required" }), {
@@ -345,8 +344,124 @@ export default {
       }
     }
 
+    // Job Status Update (active / in_process / inactive)
+    if ((pathname === "/api/jobs/status" || pathname === "/api/admin/jobs/status") && request.method === "POST") {
+      const session = await getSession();
+      if (!session) {
+        return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+      try {
+        const body = await request.json();
+        const { id, status } = body;
+        if (!id || !status) {
+          return new Response(JSON.stringify({ success: false, error: "Missing id or status" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" }
+          });
+        }
+        if (env.DB) {
+          await env.DB.prepare("UPDATE jobs SET status = ? WHERE id = ?").bind(status, id).run();
+        }
+        return new Response(JSON.stringify({
+          success: true,
+          id,
+          status,
+          message: `Job status updated to ${status}.`
+        }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+    }
+
     // =========================================================================
-    // 5. ADMIN DASHBOARD & GATE: GET /admin or /admin/
+    // 5. ADMIN ACTIONS: CANDIDATE APPLICATION STATUS & REMOVAL
+    // =========================================================================
+    // Application Delete
+    if ((pathname === "/api/applications/delete" || pathname === "/api/jobs/applications/delete" || pathname === "/api/admin/applications/delete") && request.method === "POST") {
+      const session = await getSession();
+      if (!session) {
+        return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+      try {
+        const body = await request.json();
+        const targetId = (body.id || body.app_id || "").trim();
+        if (!targetId) {
+          return new Response(JSON.stringify({ success: false, error: "Missing application id" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" }
+          });
+        }
+        if (env.DB) {
+          await env.DB.prepare("DELETE FROM job_applications WHERE id = ?").bind(targetId).run();
+        }
+        return new Response(JSON.stringify({
+          success: true,
+          id: targetId,
+          message: `Application ${targetId} permanently deleted.`
+        }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+    }
+
+    // Application Status Update (in_process / inactive / active)
+    if ((pathname === "/api/applications/status" || pathname === "/api/jobs/applications/status" || pathname === "/api/admin/applications/status") && request.method === "POST") {
+      const session = await getSession();
+      if (!session) {
+        return new Response(JSON.stringify({ success: false, error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+      try {
+        const body = await request.json();
+        const { id, status } = body;
+        if (!id || !status) {
+          return new Response(JSON.stringify({ success: false, error: "Missing id or status" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" }
+          });
+        }
+        if (env.DB) {
+          await env.DB.prepare("UPDATE job_applications SET status = ? WHERE id = ?").bind(status, id).run();
+        }
+        return new Response(JSON.stringify({
+          success: true,
+          id,
+          status,
+          message: `Application status updated to ${status}.`
+        }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ success: false, error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+    }
+
+    // =========================================================================
+    // 6. ADMIN DASHBOARD & GATE: GET /admin or /admin/
     // =========================================================================
     if (pathname === "/admin" || pathname === "/admin/" || pathname.startsWith("/admin")) {
       const session = await getSession();
@@ -385,11 +500,15 @@ export default {
           });
         }
 
+        const adminHeaders = {
+          "Content-Type": "text/html; charset=utf-8",
+          "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
+        };
+        if (session && session.token) {
+          adminHeaders["Set-Cookie"] = `psas_admin_session=${session.token}; Path=/; Max-Age=86400; Secure; SameSite=Lax`;
+        }
         return new Response(renderAdminDashboardHtml({ session, contacts, jobs, applications }), {
-          headers: {
-            "Content-Type": "text/html; charset=utf-8",
-            "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"
-          }
+          headers: adminHeaders
         });
       }
 
@@ -403,7 +522,7 @@ export default {
     }
 
     // =========================================================================
-    // 6. PUBLIC CONTACT FORM SUBMISSION: POST /api/contact
+    // 7. PUBLIC CONTACT FORM SUBMISSION: POST /api/contact
     // =========================================================================
     if (request.method === "POST" && (pathname === "/api/contact" || pathname === "/api/contact/")) {
       try {
@@ -464,7 +583,6 @@ export default {
       }
     }
 
-    // Default 404
     return new Response(JSON.stringify({ error: "Endpoint not found" }), {
       status: 404,
       headers: { ...corsHeaders, "Content-Type": "application/json" }
@@ -666,16 +784,30 @@ function renderSecurityGateHtml({ googleClientId }) {
 }
 
 // =========================================================================
-// HTML TEMPLATE: APPLE EXECUTIVE DASHBOARD WITH JOBS REMOVAL & MANAGEMENT
+// HTML TEMPLATE: APPLE EXECUTIVE DASHBOARD (FULL LIFECYCLE MANAGEMENT)
 // =========================================================================
 function renderAdminDashboardHtml({ session, contacts, jobs = [], applications = [] }) {
   const jobsJson = JSON.stringify(jobs);
   const contactsJson = JSON.stringify(contacts);
   const applicationsJson = JSON.stringify(applications);
 
+  // Helper for status badge HTML
+  function getStatusPill(status) {
+    status = (status || 'in_process').toLowerCase();
+    if (status === 'active') {
+      return '<span class="status-pill status-active">Active</span>';
+    } else if (status === 'inactive') {
+      return '<span class="status-pill status-inactive">Inactive</span>';
+    } else {
+      return '<span class="status-pill status-inprocess">In Process</span>';
+    }
+  }
+
   // 1. Build Jobs Table Rows
-  const jobsRowsHtml = jobs.map(j => `
-    <tr class="table-row" id="job-row-${j.id}" data-venture="${(j.company || '').toLowerCase()}">
+  const jobsRowsHtml = jobs.map(j => {
+    const st = (j.status || 'active').toLowerCase();
+    return `
+    <tr class="table-row" id="job-row-${j.id}" data-venture="${(j.company || '').toLowerCase()}" data-status="${st}">
       <td style="font-family: monospace; font-size: 13px; color: #2997ff; font-weight: 600;">${j.id}</td>
       <td>
         <div style="font-weight: 600; color: #ffffff; font-size: 14px;">
@@ -698,15 +830,61 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
         <div style="font-size: 13px; font-weight: 600; color: #30d158;">${j.salary_range}</div>
       </td>
       <td>
-        <span class="status-pill status-active">Active on Portal</span>
+        <select class="status-dropdown status-select-${st}" onchange="updateJobStatus('${j.id}', this.value)">
+          <option value="active" ${st === 'active' ? 'selected' : ''}>Active (Public)</option>
+          <option value="in_process" ${st === 'in_process' ? 'selected' : ''}>In Process</option>
+          <option value="inactive" ${st === 'inactive' ? 'selected' : ''}>Inactive (Hidden)</option>
+        </select>
       </td>
       <td style="white-space: nowrap;">
         <button type="button" class="btn-remove-job" onclick="openDeleteJobModal('${j.id}', '${(j.title || '').replace(/'/g, "\\'")}', '${(j.company || '').replace(/'/g, "\\'")}')">Remove Job</button>
       </td>
     </tr>
-  `).join("");
+  `}).join("");
 
-  // 2. Build Contacts Table Rows
+  // 2. Build Applications Table Rows with Download Resume & Inactive/InProcess Status
+  const applicationsRowsHtml = applications.map(a => {
+    const st = (a.status || 'in_process').toLowerCase();
+    const hasResume = !!(a.resume_url && a.resume_url.trim().length > 0);
+    return `
+    <tr class="table-row" id="app-row-${a.id}" data-status="${st}">
+      <td style="font-family: monospace; font-size: 13px; color: #2997ff; font-weight: 600;">${a.id}</td>
+      <td>
+        <div style="font-weight: 600; color: #ffffff; font-size: 14px;">${a.job_title}</div>
+        <div style="font-size: 12px; color: #86868b;">${a.company} &bull; Ref: ${a.job_id}</div>
+      </td>
+      <td>
+        <div style="font-weight: 600; color: #ffffff;">${a.applicant_name}</div>
+        <div style="font-size: 12px; color: #86868b;">
+          <a href="mailto:${a.applicant_email}" style="color:#2997ff; text-decoration:none;">${a.applicant_email}</a>
+          ${a.applicant_phone ? ' &bull; ' + a.applicant_phone : ''}
+        </div>
+      </td>
+      <td>
+        <select class="status-dropdown status-select-${st}" id="app-select-${a.id}" onchange="updateAppStatus('${a.id}', this.value)">
+          <option value="in_process" ${st === 'in_process' ? 'selected' : ''}>⏳ In Process</option>
+          <option value="inactive" ${st === 'inactive' ? 'selected' : ''}>⚪ Inactive</option>
+          <option value="active" ${st === 'active' ? 'selected' : ''}>🟢 Active</option>
+        </select>
+      </td>
+      <td>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <button type="button" class="btn-download" onclick="downloadCandidateResume('${a.id}')">
+            📥 Download Resume
+          </button>
+          <button type="button" class="btn-inspect" onclick="inspectApplication('${a.id}')">
+            View Dossier
+          </button>
+        </div>
+      </td>
+      <td style="font-size: 12px; color: #86868b; white-space: nowrap;">${a.created_at || 'Recent'}</td>
+      <td style="white-space: nowrap;">
+        <button type="button" class="btn-remove-job" onclick="openDeleteAppModal('${a.id}', '${(a.applicant_name || '').replace(/'/g, "\\'")}', '${(a.job_title || '').replace(/'/g, "\\'")}')">Delete</button>
+      </td>
+    </tr>
+  `}).join("");
+
+  // 3. Build Contacts Table Rows
   const contactsRowsHtml = contacts.map(c => `
     <tr class="table-row" data-sub="${c.subsidiary || ''}" data-id="${c.id}">
       <td style="font-family: monospace; font-size: 13px; color: #2997ff;">${c.submission_id || ('PSAS-' + c.id)}</td>
@@ -735,30 +913,6 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
     </tr>
   `).join("");
 
-  // 3. Build Applications Table Rows
-  const applicationsRowsHtml = applications.map(a => `
-    <tr class="table-row">
-      <td style="font-family: monospace; font-size: 13px; color: #2997ff;">${a.id}</td>
-      <td>
-        <div style="font-weight: 600; color: #ffffff;">${a.job_title}</div>
-        <div style="font-size: 12px; color: #86868b;">${a.company} (Ref: ${a.job_id})</div>
-      </td>
-      <td>
-        <div style="font-weight: 600; color: #ffffff;">${a.applicant_name}</div>
-        <div style="font-size: 12px; color: #86868b;">
-          <a href="mailto:${a.applicant_email}" style="color:#2997ff; text-decoration:none;">${a.applicant_email}</a>
-          ${a.applicant_phone ? ' &bull; ' + a.applicant_phone : ''}
-        </div>
-      </td>
-      <td>
-        ${a.resume_url ? `<a href="${a.resume_url}" target="_blank" style="color:#2997ff; font-size:12px; text-decoration:none;">Resume/CV ↗</a>` : ''}
-        ${a.linkedin_url ? ` &bull; <a href="${a.linkedin_url}" target="_blank" style="color:#2997ff; font-size:12px; text-decoration:none;">LinkedIn ↗</a>` : ''}
-        ${a.portfolio_url ? ` &bull; <a href="${a.portfolio_url}" target="_blank" style="color:#2997ff; font-size:12px; text-decoration:none;">Portfolio ↗</a>` : ''}
-      </td>
-      <td style="font-size: 12px; color: #86868b;">${a.created_at || 'Recent'}</td>
-    </tr>
-  `).join("");
-
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -775,6 +929,7 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
       --text: #f5f5f7;
       --text-muted: #86868b;
       --success: #30d158;
+      --warning: #ff9f0a;
       --danger: #ff453a;
     }
     * { box-sizing: border-box; }
@@ -944,6 +1099,33 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
       font-size: 13px;
       outline: none;
     }
+    .status-dropdown {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      border-radius: 980px;
+      padding: 6px 12px;
+      color: #f5f5f7;
+      font-size: 12px;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .status-dropdown:focus {
+      border-color: #2997ff;
+    }
+    .status-select-active {
+      border-color: rgba(48, 209, 88, 0.4);
+      color: #30d158;
+    }
+    .status-select-in_process {
+      border-color: rgba(255, 159, 10, 0.4);
+      color: #ff9f0a;
+    }
+    .status-select-inactive {
+      border-color: rgba(142, 142, 147, 0.4);
+      color: #8e8e93;
+    }
     .table-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
@@ -1019,7 +1201,36 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
       border: 1px solid rgba(48, 209, 88, 0.25);
       color: #30d158;
     }
+    .status-inprocess {
+      background: rgba(255, 159, 10, 0.12);
+      border: 1px solid rgba(255, 159, 10, 0.25);
+      color: #ff9f0a;
+    }
+    .status-inactive {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #8e8e93;
+    }
     /* Action Buttons */
+    .btn-download {
+      background: rgba(0, 113, 227, 0.15);
+      border: 1px solid rgba(0, 113, 227, 0.35);
+      color: #2997ff;
+      padding: 6px 14px;
+      border-radius: 980px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-download:hover {
+      background: #0071e3;
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(0, 113, 227, 0.4);
+    }
     .btn-remove-job {
       background: rgba(255, 69, 58, 0.12);
       border: 1px solid rgba(255, 69, 58, 0.3);
@@ -1066,7 +1277,7 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
       background: #16181d;
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 24px;
-      max-width: 540px;
+      max-width: 580px;
       width: 100%;
       padding: 32px;
       box-shadow: 0 40px 80px rgba(0,0,0,0.8);
@@ -1169,7 +1380,7 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
     <div class="metrics-grid">
       <div class="metric-card">
         <div class="metric-label">Active Portal Roles</div>
-        <div class="metric-num" id="active-jobs-count">${jobs.length}</div>
+        <div class="metric-num" id="active-jobs-count">${jobs.filter(j => (j.status || 'active') === 'active').length}</div>
         <div style="font-size: 12px; color: #30d158;">Synchronized on jobs.psasgroups.com</div>
       </div>
       <div class="metric-card">
@@ -1191,13 +1402,13 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
 
     <!-- Navigation Tabs -->
     <div class="tabs-bar">
-      <button type="button" class="tab-btn active" id="tab-btn-jobs" onclick="switchTab('jobs')">
+      <button type="button" class="tab-btn" id="tab-btn-jobs" onclick="switchTab('jobs')">
         🏢 Portal Jobs Management
         <span class="tab-badge" id="tab-jobs-badge">${jobs.length}</span>
       </button>
-      <button type="button" class="tab-btn" id="tab-btn-applications" onclick="switchTab('applications')">
+      <button type="button" class="tab-btn active" id="tab-btn-applications" onclick="switchTab('applications')">
         📄 Candidate Applications
-        <span class="tab-badge">${applications.length}</span>
+        <span class="tab-badge" id="tab-apps-badge">${applications.length}</span>
       </button>
       <button type="button" class="tab-btn" id="tab-btn-contacts" onclick="switchTab('contacts')">
         📬 Contact Inquiries
@@ -1206,10 +1417,16 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
     </div>
 
     <!-- TAB 1: JOBS MANAGEMENT -->
-    <div id="panel-jobs" class="tab-panel">
+    <div id="panel-jobs" class="tab-panel" style="display: none;">
       <div class="controls-bar">
         <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
           <input type="text" id="job-search-box" class="filter-select" style="min-width: 280px;" placeholder="Search roles by title, ref ID, venture, or location...">
+          <select id="job-status-filter" class="filter-select">
+            <option value="all">All Statuses</option>
+            <option value="active">Active (Public)</option>
+            <option value="in_process">In Process</option>
+            <option value="inactive">Inactive (Hidden)</option>
+          </select>
           <select id="job-venture-filter" class="filter-select">
             <option value="all">All Ventures</option>
             <option value="psas groups global">PSAS Groups Global</option>
@@ -1236,7 +1453,7 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
               <th>Subsidiary / Venture</th>
               <th>Arrangement</th>
               <th>Compensation</th>
-              <th>Live Status</th>
+              <th>Status Lifecycle</th>
               <th>Dashboard Action</th>
             </tr>
           </thead>
@@ -1248,7 +1465,22 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
     </div>
 
     <!-- TAB 2: CANDIDATE APPLICATIONS -->
-    <div id="panel-applications" class="tab-panel" style="display: none;">
+    <div id="panel-applications" class="tab-panel">
+      <div class="controls-bar">
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+          <input type="text" id="app-search-box" class="filter-select" style="min-width: 280px;" placeholder="Search candidate, role, email, or app ID...">
+          <select id="app-status-filter" class="filter-select">
+            <option value="all">All Application Statuses</option>
+            <option value="in_process">⏳ In Process</option>
+            <option value="active">🟢 Active</option>
+            <option value="inactive">⚪ Inactive</option>
+          </select>
+        </div>
+        <div style="font-size: 13px; color: var(--text-muted);">
+          Click <strong>Download Resume</strong> to save candidate CV & complete profile dossier.
+        </div>
+      </div>
+
       <div class="table-card">
         <table>
           <thead>
@@ -1256,12 +1488,14 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
               <th>App ID</th>
               <th>Applied Role</th>
               <th>Candidate Name & Contact</th>
-              <th>Credentials & Links</th>
+              <th>Status</th>
+              <th>Resume & Dossier</th>
               <th>Date Applied</th>
+              <th>Action</th>
             </tr>
           </thead>
-          <tbody>
-            ${applicationsRowsHtml || '<tr><td colspan="5" class="empty-state">No candidate applications received yet. Real-time submissions from jobs.psasgroups.com will populate here.</td></tr>'}
+          <tbody id="applications-table-body">
+            ${applicationsRowsHtml || '<tr><td colspan="7" class="empty-state">No candidate applications received yet. Real-time submissions from jobs.psasgroups.com will populate here.</td></tr>'}
           </tbody>
         </table>
       </div>
@@ -1334,6 +1568,40 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
     </div>
   </div>
 
+  <!-- DELETE APPLICATION CONFIRMATION MODAL -->
+  <div id="delete-app-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-title">
+        <span style="color: #ff453a;">🗑️</span> Delete Candidate Application
+      </div>
+      <div class="modal-desc">
+        Are you sure you want to permanently delete the application for <strong id="modal-app-name" style="color:#ffffff;"></strong>?
+        <div style="margin: 12px 0; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.04); font-size: 13px;">
+          <div><strong>App ID:</strong> <span id="modal-app-id" style="font-family:monospace; color:#2997ff;"></span></div>
+          <div style="margin-top: 4px;"><strong>Applied Position:</strong> <span id="modal-app-role"></span></div>
+        </div>
+        <p style="color: #ff453a; font-size: 13px; margin: 0;">
+          ⚠️ This candidate application record and statement will be permanently erased from Cloudflare D1.
+        </p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" onclick="closeDeleteAppModal()">Cancel</button>
+        <button type="button" class="btn-confirm-delete" id="confirm-delete-app-btn" onclick="executeDeleteApp()">Confirm & Delete Application</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION DOSSIER MODAL -->
+  <div id="dossier-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 680px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0; font-size: 18px; color: #ffffff;" id="dossier-title">Candidate Dossier</h3>
+        <button type="button" class="btn-cancel" onclick="closeDossierModal()" style="padding: 6px 14px; font-size: 12px;">Close</button>
+      </div>
+      <div id="dossier-body" style="font-size: 13px; line-height: 1.6; color: var(--text-muted);"></div>
+    </div>
+  </div>
+
   <!-- INSPECT CONTACT MODAL -->
   <div id="inspect-modal" class="modal-overlay">
     <div class="modal-card" style="max-width: 640px;">
@@ -1351,7 +1619,18 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
   <script>
     const allContacts = ${contactsJson};
     const allJobs = ${jobsJson};
+    const allApplications = ${applicationsJson};
+    const CURRENT_SESSION_TOKEN = "${session.token || ''}";
     let pendingDeleteJobId = null;
+    let pendingDeleteAppId = null;
+
+    function authHeaders() {
+      const h = { 'Content-Type': 'application/json' };
+      if (CURRENT_SESSION_TOKEN) {
+        h['Authorization'] = 'Bearer ' + CURRENT_SESSION_TOKEN;
+      }
+      return h;
+    }
 
     // Tab Switching
     function switchTab(tabId) {
@@ -1363,7 +1642,7 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
       if (targetPanel) targetPanel.style.display = 'block';
     }
 
-    // Modal Control
+    // Modal Controls for Job Deletion
     function openDeleteJobModal(jobId, jobTitle, company) {
       pendingDeleteJobId = jobId;
       document.getElementById('modal-del-title').textContent = jobTitle;
@@ -1388,7 +1667,7 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
       try {
         const res = await fetch('/api/jobs/delete', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: authHeaders(),
           body: JSON.stringify({ job_id: pendingDeleteJobId })
         });
         const data = await res.json();
@@ -1401,7 +1680,6 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
             row.style.transform = 'translateX(20px)';
             setTimeout(() => row.remove(), 300);
           }
-          // Update counters
           const cntEl = document.getElementById('active-jobs-count');
           if (cntEl) {
             const curr = parseInt(cntEl.textContent, 10) || 0;
@@ -1425,15 +1703,212 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
       }
     }
 
-    function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.style.display = 'block';
-      setTimeout(() => { toast.style.opacity = '1'; }, 10);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => { toast.style.display = 'none'; }, 300);
-      }, 3500);
+    // Update Job Status (active, in_process, inactive)
+    async function updateJobStatus(jobId, newStatus) {
+      try {
+        const res = await fetch('/api/jobs/status', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ id: jobId, status: newStatus })
+        });
+        const data = await res.json();
+        if (data.success) {
+          const row = document.getElementById('job-row-' + jobId);
+          if (row) row.setAttribute('data-status', newStatus);
+          const sel = document.getElementById('job-select-' + jobId);
+          if (sel) {
+            sel.value = newStatus;
+            sel.className = 'status-dropdown status-select-' + newStatus;
+          }
+          const job = allJobs.find(j => j.id == jobId);
+          if (job) job.status = newStatus;
+          showToast('✓ Job status updated to ' + newStatus.replace('_', ' ').toUpperCase());
+        } else {
+          alert('Failed to update status: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Status update error: ' + err.message);
+      }
+    }
+
+    // Modal Controls for Application Deletion
+    function openDeleteAppModal(appId, applicantName, jobTitle) {
+      pendingDeleteAppId = appId;
+      document.getElementById('modal-app-name').textContent = applicantName;
+      document.getElementById('modal-app-id').textContent = appId;
+      document.getElementById('modal-app-role').textContent = jobTitle;
+      document.getElementById('delete-app-modal').style.display = 'flex';
+    }
+
+    function closeDeleteAppModal() {
+      pendingDeleteAppId = null;
+      document.getElementById('delete-app-modal').style.display = 'none';
+    }
+
+    // Execute Application Deletion
+    async function executeDeleteApp() {
+      if (!pendingDeleteAppId) return;
+      const btn = document.getElementById('confirm-delete-app-btn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Deleting...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/applications/delete', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ id: pendingDeleteAppId })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          const row = document.getElementById('app-row-' + pendingDeleteAppId);
+          if (row) {
+            row.style.transition = 'all 0.3s ease';
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(20px)';
+            setTimeout(() => row.remove(), 300);
+          }
+          const cntEl = document.getElementById('active-apps-count');
+          if (cntEl) {
+            const curr = parseInt(cntEl.textContent, 10) || 0;
+            cntEl.textContent = Math.max(0, curr - 1);
+          }
+          const badgeEl = document.getElementById('tab-apps-badge');
+          if (badgeEl) {
+            const curr = parseInt(badgeEl.textContent, 10) || 0;
+            badgeEl.textContent = Math.max(0, curr - 1);
+          }
+          closeDeleteAppModal();
+          showToast('✓ Application permanently deleted');
+        } else {
+          alert('Error deleting application: ' + (data.error || 'Server error'));
+        }
+      } catch (err) {
+        alert('Network request failed: ' + err.message);
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // Update Application Status (in_process, inactive, active)
+    async function updateAppStatus(appId, newStatus) {
+      try {
+        const res = await fetch('/api/applications/status', {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ id: appId, status: newStatus })
+        });
+        const data = await res.json();
+        if (data.success) {
+          const row = document.getElementById('app-row-' + appId);
+          if (row) row.setAttribute('data-status', newStatus);
+          const sel = document.getElementById('app-select-' + appId);
+          if (sel) {
+            sel.value = newStatus;
+            sel.className = 'status-dropdown status-select-' + newStatus;
+          }
+          const app = allApplications.find(a => a.id == appId);
+          if (app) app.status = newStatus;
+          const label = newStatus === 'in_process' ? 'In Process' : (newStatus === 'inactive' ? 'Inactive' : 'Active');
+          showToast('✓ Application status updated to ' + label);
+        } else {
+          alert('Failed to update status: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Status update error: ' + err.message);
+      }
+    }
+
+    // Download Candidate Resume & Export Dossier
+    function downloadCandidateResume(appId) {
+      const app = allApplications.find(a => a.id == appId);
+      if (!app) return;
+
+      // If valid URL link provided, open it in background or trigger
+      if (app.resume_url && app.resume_url.startsWith('http')) {
+        window.open(app.resume_url, '_blank');
+      }
+
+      // Generate downloadable candidate dossier document
+      const dossierHtml = [
+        '<!DOCTYPE html><html><head><meta charset="utf-8">',
+        '<title>Candidate Application Dossier - ' + (app.applicant_name || '') + '</title>',
+        '<style>',
+        'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 40px; color: #1d1d1f; line-height: 1.6; max-width: 800px; margin: 0 auto; }',
+        'h1 { font-size: 24px; margin-bottom: 4px; color: #000; }',
+        '.badge { display: inline-block; padding: 4px 10px; border-radius: 980px; font-size: 12px; font-weight: 600; background: #e8f3ff; color: #0071e3; margin-bottom: 24px; }',
+        '.section { border-top: 1px solid #d2d2d7; padding: 20px 0; }',
+        '.field-label { font-size: 12px; text-transform: uppercase; color: #86868b; font-weight: 600; letter-spacing: 0.05em; }',
+        '.field-val { font-size: 15px; font-weight: 500; margin-top: 4px; }',
+        '.note-box { background: #f5f5f7; padding: 18px; border-radius: 12px; font-size: 14px; white-space: pre-wrap; margin-top: 8px; }',
+        'a { color: #0071e3; text-decoration: none; }',
+        '</style></head><body>',
+        '<h1>' + (app.applicant_name || '') + '</h1>',
+        '<div class="badge">Application Ref: ' + app.id + ' &bull; Status: ' + (app.status || 'in_process') + '</div>',
+        '<div class="section"><div class="field-label">Target Role & Venture</div><div class="field-val" style="font-size: 18px; font-weight: 600;">' + (app.job_title || '') + ' &bull; ' + (app.company || '') + ' (Ref: ' + (app.job_id || '') + ')</div></div>',
+        '<div class="section"><div class="field-label">Contact Details</div><div class="field-val">Email: <a href="mailto:' + (app.applicant_email || '') + '">' + (app.applicant_email || '') + '</a></div><div class="field-val">Phone: ' + (app.applicant_phone || 'N/A') + '</div><div class="field-val">Applied Date: ' + (app.created_at || 'Recent') + '</div></div>',
+        '<div class="section"><div class="field-label">Credentials & Verified Links</div><div class="field-val">Resume Link: ' + (app.resume_url ? '<a href="' + app.resume_url + '" target="_blank">' + app.resume_url + '</a>' : 'Attached in pitch') + '</div><div class="field-val">LinkedIn: ' + (app.linkedin_url ? '<a href="' + app.linkedin_url + '" target="_blank">' + app.linkedin_url + '</a>' : 'N/A') + '</div><div class="field-val">Portfolio: ' + (app.portfolio_url ? '<a href="' + app.portfolio_url + '" target="_blank">' + app.portfolio_url + '</a>' : 'N/A') + '</div></div>',
+        '<div class="section"><div class="field-label">Candidate Statement & Pitch</div><div class="note-box">' + (app.cover_note || 'No statement provided.') + '</div></div>',
+        '<div style="margin-top: 40px; font-size: 11px; color: #86868b; text-align: center;">PSAS Groups Global &bull; Sovereign Talent Acquisition System &bull; Confidential</div>',
+        '</body></html>'
+      ].join(String.fromCharCode(10));
+
+      const blob = new Blob([dossierHtml], { type: 'text/html;charset=utf-8' });
+      const downloadUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = (app.applicant_name.replace(/[^a-zA-Z0-9]/g, '_')) + '_Application_Dossier_' + app.id + '.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(downloadUrl);
+
+      showToast('✓ Resume & candidate dossier downloaded successfully');
+    }
+
+    // Inspect Application Dossier Modal
+    function inspectApplication(appId) {
+      const app = allApplications.find(a => a.id == appId);
+      if (!app) return;
+
+      document.getElementById('dossier-title').textContent = 'Candidate: ' + app.applicant_name;
+      document.getElementById('dossier-body').innerHTML = 
+        '<div style="background: rgba(0,0,0,0.3); padding: 18px; border-radius: 16px; margin-bottom: 20px;">' +
+          '<div style="font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 4px;">' + app.applicant_name + '</div>' +
+          '<div style="color: #2997ff; margin-bottom: 12px;"><a href="mailto:' + app.applicant_email + '" style="color:#2997ff; text-decoration:none;">' + app.applicant_email + '</a> ' + (app.applicant_phone ? '&bull; ' + app.applicant_phone : '') + '</div>' +
+          '<div><strong>Position:</strong> ' + app.job_title + ' at ' + app.company + ' (Ref: ' + app.job_id + ')</div>' +
+          '<div><strong>Application ID:</strong> ' + app.id + ' &bull; <strong>Applied:</strong> ' + (app.created_at || 'Recent') + '</div>' +
+          '<div style="margin-top: 8px;"><strong>Status:</strong> <span class="status-pill status-' + (app.status || 'in_process') + '">' + ((app.status || 'in_process').replace('_', ' ').toUpperCase()) + '</span></div>' +
+        '</div>' +
+        '<div style="margin-bottom: 16px;">' +
+          '<div style="font-weight: 600; color: #ffffff; margin-bottom: 6px;">Credentials & Professional Links:</div>' +
+          '<div style="display: flex; gap: 10px; flex-wrap: wrap;">' +
+            (app.resume_url ? '<a href="' + app.resume_url + '" target="_blank" class="btn-download" style="text-decoration:none;">📥 Open Resume Link ↗</a>' : '') +
+            (app.linkedin_url ? '<a href="' + app.linkedin_url + '" target="_blank" class="portal-link" style="text-decoration:none;">LinkedIn Profile ↗</a>' : '') +
+            (app.portfolio_url ? '<a href="' + app.portfolio_url + '" target="_blank" class="portal-link" style="text-decoration:none;">Portfolio ↗</a>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div style="font-weight: 600; color: #ffffff; margin-bottom: 6px;">Candidate Pitch & Statement:</div>' +
+        '<div style="background: rgba(255,255,255,0.03); padding: 16px; border-radius: 12px; white-space: pre-wrap; color:#f5f5f7; margin-bottom: 24px;">' + (app.cover_note || 'No pitch provided.') + '</div>' +
+        '<div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 16px;">' +
+          '<button type="button" class="btn-remove-job" id="dossier-del-btn">Delete Application</button>' +
+          '<button type="button" class="btn-download" id="dossier-dl-btn">📥 Download Full Dossier</button>' +
+        '</div>';
+      
+      document.getElementById('dossier-modal').style.display = 'flex';
+      document.getElementById('dossier-del-btn').onclick = function() {
+        closeDossierModal();
+        openDeleteAppModal(app.id, app.applicant_name, app.job_title);
+      };
+      document.getElementById('dossier-dl-btn').onclick = function() {
+        downloadCandidateResume(app.id);
+      };
+    }
+
+    function closeDossierModal() {
+      document.getElementById('dossier-modal').style.display = 'none';
     }
 
     // Inspect contact modal
@@ -1459,23 +1934,58 @@ function renderAdminDashboardHtml({ session, contacts, jobs = [], applications =
       document.getElementById('inspect-modal').style.display = 'none';
     }
 
+    // Toast
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.opacity = '1'; }, 10);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => { toast.style.display = 'none'; }, 300);
+      }, 3500);
+    }
+
     // Jobs Filter / Search
     const jobSearch = document.getElementById('job-search-box');
     const jobVenture = document.getElementById('job-venture-filter');
+    const jobStatus = document.getElementById('job-status-filter');
     function applyJobFilter() {
       const q = jobSearch.value.toLowerCase().trim();
       const v = jobVenture.value.toLowerCase();
+      const s = jobStatus ? jobStatus.value.toLowerCase() : 'all';
       document.querySelectorAll('#jobs-table-body tr').forEach(r => {
         if (!r.id) return;
         const venture = (r.getAttribute('data-venture') || '').toLowerCase();
+        const status = (r.getAttribute('data-status') || '').toLowerCase();
         const text = r.textContent.toLowerCase();
         const matchV = (v === 'all' || venture.includes(v));
+        const matchS = (s === 'all' || status === s);
         const matchQ = (!q || text.includes(q));
-        r.style.display = (matchV && matchQ) ? '' : 'none';
+        r.style.display = (matchV && matchS && matchQ) ? '' : 'none';
       });
     }
     if (jobSearch) jobSearch.addEventListener('input', applyJobFilter);
     if (jobVenture) jobVenture.addEventListener('change', applyJobFilter);
+    if (jobStatus) jobStatus.addEventListener('change', applyJobFilter);
+
+    // Applications Filter / Search
+    const appSearch = document.getElementById('app-search-box');
+    const appStatusFilter = document.getElementById('app-status-filter');
+    function applyAppFilter() {
+      const q = appSearch.value.toLowerCase().trim();
+      const s = appStatusFilter.value.toLowerCase();
+      document.querySelectorAll('#applications-table-body tr').forEach(r => {
+        if (!r.id) return;
+        const status = (r.getAttribute('data-status') || '').toLowerCase();
+        const text = r.textContent.toLowerCase();
+        const matchS = (s === 'all' || status === s);
+        const matchQ = (!q || text.includes(q));
+        r.style.display = (matchS && matchQ) ? '' : 'none';
+      });
+    }
+    if (appSearch) appSearch.addEventListener('input', applyAppFilter);
+    if (appStatusFilter) appStatusFilter.addEventListener('change', applyAppFilter);
 
     // Contacts Filter / Search
     const contactSearch = document.getElementById('search-box');

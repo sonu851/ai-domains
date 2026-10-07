@@ -8,6 +8,13 @@
   <meta name="theme-color" content="#000000">
   
   <link rel="stylesheet" href="./styles.css?v=20261005">
+  <script>
+    if (window.location.hostname === 'jobs.psasgroups.com' || window.location.hostname === 'careers.psasgroups.com') {
+      if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+        window.location.replace('/jobs.html' + window.location.search + window.location.hash);
+      }
+    }
+  </script>
   <style>
 /* ==========================================================================
    PSAS GROUPS GLOBAL (psasgroups.com) - Official Apple Conglomerate Design System
@@ -842,6 +849,7 @@ body {
         <li><a href="#ventures">Venture Ecosystem</a></li>
         <li><a href="#architecture">Architecture</a></li>
         <li><a href="#supercompute">Supercomputing</a></li>
+        <li><a href="./jobs.html">Careers & Jobs</a></li>
         <li><a href="#compliance">Governance</a></li>
         <li><a href="./contact.html">Contact</a></li>
       </ul>
@@ -1360,6 +1368,7 @@ body {
         <div>
           <div class="footer-col-title">Holding Institutional</div>
           <ul class="footer-links">
+            <li><a href="./jobs.html">Careers & Job Board</a></li>
             <li><a href="./contact.html">Executive Contact Desk</a></li>
             <li><a href="./contact.html">Investor Relations</a></li>
             <li><a href="./contact.html">Sovereign Fund Access</a></li>

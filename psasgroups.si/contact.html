@@ -1588,6 +1588,7 @@ body {
       <!-- Left: Form -->
       <div class="contact-form-card">
         <form id="contact-form" autocomplete="on">
+          <input type="text" name="website_hp" style="display:none !important; position:absolute; left:-9999px;" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="form-group-row">
             <div class="form-group">
               <label class="form-label" for="full-name">Full Name <span class="required">*</span></label>
@@ -1843,7 +1844,8 @@ body {
         subsidiary: form.elements['subsidiary'].value,
         inquiry_type: form.elements['inquiry_type'].value,
         subject: form.elements['subject'].value,
-        message: form.elements['message'].value
+        message: form.elements['message'].value,
+        website_hp: form.elements['website_hp'] ? form.elements['website_hp'].value : ''
       };
 
       try {

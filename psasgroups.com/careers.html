@@ -1002,6 +1002,7 @@
       </div>
 
       <form id="form-candidate-apply" onsubmit="submitJobApplication(event)">
+        <input type="text" id="apply-hp" name="apply_hp" style="display:none !important; position:absolute; left:-9999px;" tabindex="-1" autocomplete="off" aria-hidden="true">
         <input type="hidden" id="apply-job-id" name="job_id">
         <input type="hidden" id="apply-job-title" name="job_title">
         <input type="hidden" id="apply-company" name="company">
@@ -1061,6 +1062,7 @@
       </p>
 
       <form id="form-post-vacancy" onsubmit="submitNewJob(event)">
+        <input type="text" id="vacancy-hp" name="vacancy_hp" style="display:none !important; position:absolute; left:-9999px;" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="form-row-2">
           <div class="form-group">
             <label class="form-label">Job Title *</label>
@@ -1391,7 +1393,8 @@
         applicant_phone: document.getElementById("apply-phone").value,
         linkedin_url: document.getElementById("apply-linkedin").value,
         resume_url: document.getElementById("apply-resume-url").value,
-        cover_note: document.getElementById("apply-pitch").value
+        cover_note: document.getElementById("apply-pitch").value,
+        apply_hp: document.getElementById("apply-hp") ? document.getElementById("apply-hp").value : ''
       };
 
       try {
@@ -1449,7 +1452,8 @@
         requirements: document.getElementById("post-requirements").value,
         benefits: document.getElementById("post-benefits").value,
         contact_email: document.getElementById("post-email").value,
-        company_logo_color: document.getElementById("post-color").value
+        company_logo_color: document.getElementById("post-color").value,
+        vacancy_hp: document.getElementById("vacancy-hp") ? document.getElementById("vacancy-hp").value : ''
       };
 
       try {
